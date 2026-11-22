@@ -513,7 +513,21 @@ $("gear").onclick=()=>{
   $("gShade").classList.add("on");
 };
 $("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))$("gShade").classList.remove("on")});
-$("gSave").onclick=()=>{S.me={phone:$("gPhone").value.trim(),email:$("gMail").value.trim()};persist();$("gShade").classList.remove("on");toast(tr("saved"))};
+$("gSave").onclick=async()=>{
+  const mail=$("gMail").value.trim();
+  S.me={phone:$("gPhone").value.trim(),email:mail};
+  persist();
+  $("gShade").classList.remove("on");
+  toast(tr("saved"));
+  if(mail&&window.emailjs){
+    const passcode=Math.floor(100000+Math.random()*900000).toString();
+    const expiry=new Date(Date.now()+15*60*1000);
+    const time=expiry.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    try{
+      await emailjs.send("service_gehhxjs","template_gj7tnqi",{email:mail,passcode:passcode,time:time});
+    }catch(err){console.error(err)}
+  }
+};
 $("gExport").onclick=async()=>{
   const ok=await saveFile({name:"work-notebook-backup.json",blob:new Blob([JSON.stringify(S)],{type:"application/json"})});
   if(!ok)toast(tr("noDl"));
@@ -551,7 +565,7 @@ setLang(LANG);
 
 // ===== Rating (first open) =====
 // Paste your Cloudflare Worker address here to receive ratings, e.g. "https://rate.yourname.workers.dev"
-const API="https://notebook.abdcode.workers.dev";   // ← ضع هنا رابط الـ Worker مثل: "https://notebook.yourname.workers.dev"
+const API="";   // ← ضع هنا رابط الـ Worker مثل: "https://notebook.yourname.workers.dev"
 const RATE_URL=API?API+"/rate":"";
 const RK="workNotebook.rated",RQ="workNotebook.rq";
 let stars=0;
@@ -652,77 +666,11 @@ $("pushBtn").onclick=async()=>{(PUSH_OK&&Notification.permission==="granted"&&aw
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 syncPush();
 </script>
-
-<div id="otp-box">
-  <form id="otp-send-form">
-    <input type="email" id="user-email" placeholder="أدخل بريدك الإلكتروني" required />
-    <button type="submit">إرسال رمز التحقق</button>
-  </form>
-  <p id="otp-status"></p>
-
-  <div id="otp-verify-section" style="display: none; margin-top: 12px;">
-    <input type="text" id="otp-input" maxlength="6" placeholder="أدخل الرمز المكون من 6 أرقام" />
-    <button type="button" id="verify-btn">تأكيد الكود</button>
-    <p id="verify-status"></p>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  emailjs.init({ publicKey: "n-3RJqeFuNzD-KmW8" });
-
-  let currentPasscode = "";
-  let expiryTimestamp = 0;
-
-  function generateCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+  if (window.emailjs) {
+    emailjs.init({ publicKey: "n-3RJqeFuNzD-KmW8" });
   }
-
-  function getExpiryTimeText(minutes = 15) {
-    const expiry = new Date(Date.now() + minutes * 60 * 1000);
-    return expiry.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-
-  document.getElementById("otp-send-form").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    const statusEl = document.getElementById("otp-status");
-    const email = document.getElementById("user-email").value.trim();
-
-    currentPasscode = generateCode();
-    expiryTimestamp = Date.now() + 15 * 60 * 1000;
-    const timeText = getExpiryTimeText(15);
-
-    statusEl.textContent = "جاري الإرسال...";
-
-    try {
-      await emailjs.send("service_gehhxjs", "template_gj7tnqi", {
-        email: email,
-        passcode: currentPasscode,
-        time: timeText,
-      });
-      statusEl.textContent = "تم إرسال الرمز إلى بريدك. أدخله بالأسفل.";
-      document.getElementById("otp-verify-section").style.display = "block";
-    } catch (err) {
-      statusEl.textContent = "تعذر الإرسال، تحقق من البيانات أو الشبكة.";
-      console.error(err);
-    }
-  });
-
-  document.getElementById("verify-btn").addEventListener("click", function () {
-    const enteredCode = document.getElementById("otp-input").value.trim();
-    const verifyStatus = document.getElementById("verify-status");
-
-    if (Date.now() > expiryTimestamp) {
-      verifyStatus.textContent = "انتهت صلاحية الرمز، أعد إرسال رمز جديد.";
-      return;
-    }
-
-    if (enteredCode === currentPasscode && currentPasscode !== "") {
-      verifyStatus.textContent = "تم التحقق بنجاح!";
-    } else {
-      verifyStatus.textContent = "الرمز غير صحيح، حاول مرة أخرى.";
-    }
-  });
 </script>
 </body>
 </html>
