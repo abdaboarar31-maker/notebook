@@ -198,9 +198,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   <h3 id="gTitle"></h3>
   <label id="gContactL"></label>
   <input id="gPhone" type="tel" inputmode="tel" autocomplete="tel">
-  <input id="gMail" type="email" inputmode="email" autocomplete="email" style="margin-top:8px">
+  <input id="gMail" type="email" inputmode="email" autocomplete="email" style="display:none;margin-top:8px">
   <div id="otpVerifyBox" style="display:none;margin-top:10px">
-    <label for="otpCodeInput">أدخل الرمز الذي وصلك على الجيميل</label>
+    <label for="otpCodeInput">أدخل الرمز الذي وصلك</label>
     <div class="hrs">
       <input id="otpCodeInput" type="text" inputmode="numeric" maxlength="6" placeholder="رمز التحقق (6 أرقام)">
       <button type="button" class="save" id="otpConfirmBtn" style="flex:0 0 auto;padding:0 14px;font-size:14px">تأكيد</button>
@@ -252,9 +252,9 @@ const I={
 ar:{title:"دفتر أيام العمل",days:"أيام عمل",hours:"ساعات",amount:"المبلغ",wageLbl:"أجرة اليوم:",wagePh:"اختياري",work:"عملت",off:"إجازة",abs:"غياب",notesH:"ملاحظات الشهر",wa:"إرسال بالواتساب",pdf:"تحميل PDF",hrsLbl:"عدد الساعات",noteLbl:"ملاحظة",notePh:"شو اشتغلت اليوم؟",save:"حفظ",del:"حذف",bName:"اسم القائمة (شخص أو شغلة)",bPh:"مثلاً: شغل مع أبو أحمد",langT:"اللغة",hr:"ساعة",empty:"اضغط على أي يوم لتسجّل فيه.",list:"قائمة",editList:"تعديل القائمة",newList:"قائمة جديدة",confirmDel:"تأكيد حذف القائمة وكل أيامها؟",day:"اليوم",status:"الحالة",hoursCol:"الساعات",noteCol:"ملاحظة",workDays:"أيام العمل",hoursTot:"الساعات",amountTot:"المبلغ",myBook:"دفتري",noRows:"ما في أيام مسجّلة بهالشهر",preparing:"عم بجهّز الـ PDF…",tapSend:"اضغط مرة ثانية للإرسال",noDl:"ما زبط التحميل هون",fail:"ما زبطت العملية",prev:"الشهر السابق",next:"الشهر التالي"},
 he:{title:"יומן ימי עבודה",days:"ימי עבודה",hours:"שעות",amount:"סכום",wageLbl:"שכר ליום:",wagePh:"אופציונלי",work:"עבדתי",off:"חופשה",abs:"היעדרות",notesH:"הערות החודש",wa:"שליחה בוואטסאפ",pdf:"הורדת PDF",hrsLbl:"מספר שעות",noteLbl:"הערה",notePh:"מה עבדת היום?",save:"שמירה",del:"מחיקה",bName:"שם הרשימה (אדם או עבודה)",bPh:"למשל: עבודה עם דני",langT:"שפה",hr:"שעות",empty:"לחצו על יום כדי לרשום בו.",list:"רשימה",editList:"עריכת רשימה",newList:"רשימה חדשה",confirmDel:"לאשר מחיקת הרשימה וכל הימים שלה?",day:"יום",status:"סטטוס",hoursCol:"שעות",noteCol:"הערה",workDays:"ימי עבודה",hoursTot:"שעות",amountTot:"סכום",myBook:"היומן שלי",noRows:"אין ימים רשומים בחודש הזה",preparing:"מכין PDF…",tapSend:"לחצו שוב לשליחה",noDl:"ההורדה לא זמינה כאן",fail:"הפעולה נכשלה",prev:"החודש הקודם",next:"החודש הבא"},
 en:{title:"Work Days Notebook",days:"Work days",hours:"Hours",amount:"Amount",wageLbl:"Daily wage:",wagePh:"Optional",work:"Worked",off:"Day off",abs:"Absent",notesH:"This month",wa:"Send on WhatsApp",pdf:"Download PDF",hrsLbl:"Hours worked",noteLbl:"Note",notePh:"What did you work on?",save:"Save",del:"Delete",bName:"List name (person or job)",bPh:"e.g. Work with Sam",langT:"Language",hr:"hrs",empty:"Tap any day to log it.",list:"List",editList:"Edit list",newList:"New list",confirmDel:"Delete this list and all its days?",day:"Day",status:"Status",hoursCol:"Hours",noteCol:"Note",workDays:"Work days",hoursTot:"Hours",amountTot:"Amount",myBook:"My notebook",noRows:"No days logged this month",preparing:"Preparing PDF…",tapSend:"Tap again to send",noDl:"Download isn’t available here",fail:"Something went wrong",prev:"Previous month",next:"Next month"}};
-Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"بياناتك (اختياري) — بتنحفظ مع النسخة الاحتياطية",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",phonePh:"رقم الهاتف",mailPh:"الإيميل",saved:"انحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطية",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
-Object.assign(I.he,{payD:"יומי",payM:"חודשי",wagePh:"שכר ליום",salaryPh:"משכורת חודשית",settings:"הגדרות",contactL:"הפרטים שלך (אופציונלי) — נשמרים עם הגיבוי",backL:"גיבוי",export:"שמירת גיבוי לקובץ",import:"שחזור מקובץ",cloudRestore:"שחזור מהחשבון",phonePh:"מספר טלפון",mailPh:"אימייל",saved:"נשמר",restored:"הנתונים שוחזרו מהגיבוי",cloudOn:"גיבוי אוטומטי פעיל בחשבון שלך",cloudOff:"גיבוי אוטומטי לא זמין כאן — השתמשו בגיבוי לקובץ",lastBk:"גיבוי אחרון:",noBk:"אין גיבוי שמור",badFile:"הקובץ לא תקין",confirmRestore:"לאשר החלפה?"});
-Object.assign(I.en,{payD:"Daily",payM:"Monthly",wagePh:"Daily wage",salaryPh:"Monthly salary",settings:"Settings",contactL:"Your details (optional) — saved with your backup",backL:"Backup",export:"Save backup file",import:"Restore from file",cloudRestore:"Restore from my account",phonePh:"Phone number",mailPh:"Email",saved:"Saved",restored:"Your data was restored from backup",cloudOn:"Automatic backup is on for your account",cloudOff:"Automatic backup isn’t available here — use the backup file",lastBk:"Last backup:",noBk:"No backup saved",badFile:"That file isn’t valid",confirmRestore:"Tap again to replace"});
+Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"رقم الجوال (يتحقق لمرة واحدة فقط)",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",phonePh:"+972525257978",mailPh:"الإيميل",saved:"انحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطية",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
+Object.assign(I.he,{payD:"יומי",payM:"חודשי",wagePh:"שכר ליום",salaryPh:"משכורת חודשית",settings:"הגדרות",contactL:"מספר נייד (אימות חד-פעמי בלבד)",backL:"גיבוי",export:"שמירת גיבוי לקובץ",import:"שחזור מקובץ",cloudRestore:"שחזור מהחשבון",phonePh:"+972525257978",mailPh:"אימייל",saved:"נשמר",restored:"הנתונים שוחזרו מהגיבוי",cloudOn:"גיבוי אוטומטי פעיל בחשבון שלך",cloudOff:"גיבוי אוטומטי לא זמין כאן — השתמשו בגיבוי לקובץ",lastBk:"גיבוי אחרון:",noBk:"אין גיבוי שמור",badFile:"הקובץ לא תקין",confirmRestore:"לאשר החלפה?"});
+Object.assign(I.en,{payD:"Daily",payM:"Monthly",wagePh:"Daily wage",salaryPh:"Monthly salary",settings:"Settings",contactL:"Mobile number (one-time verification only)",backL:"Backup",export:"Save backup file",import:"Restore from file",cloudRestore:"Restore from my account",phonePh:"+972525257978",mailPh:"Email",saved:"Saved",restored:"Your data was restored from backup",cloudOn:"Automatic backup is on for your account",cloudOff:"Automatic backup isn’t available here — use the backup file",lastBk:"Last backup:",noBk:"No backup saved",badFile:"That file isn’t valid",confirmRestore:"Tap again to replace"});
 Object.assign(I.ar,{aboutT:"حول وحقوق",author:"عبد أبو عرار",aboutD:"دفتر بسيط لتسجيل أيام عملك وساعاتك وأجرتك، وبتبعته PDF أو واتساب بضغطة.",siteL:"موقعي",ytL:"قناتي على يوتيوب",rights:"© 2026 Abd Code — جميع الحقوق محفوظة"});
 Object.assign(I.he,{aboutT:"אודות וזכויות",author:"עבד אבו ערער",aboutD:"יומן פשוט לרישום ימי העבודה, השעות והשכר שלך, ושליחה כ-PDF או בוואטסאפ בלחיצה.",siteL:"האתר שלי",ytL:"ערוץ היוטיוב שלי",rights:"© 2026 Abd Code — כל הזכויות שמורות"});
 Object.assign(I.en,{aboutT:"About & rights",author:"Abd Abu Arar",aboutD:"A simple notebook for your work days, hours and pay — send it as a PDF or on WhatsApp in one tap.",siteL:"My website",ytL:"My YouTube channel",rights:"© 2026 Abd Code — All rights reserved"});
@@ -286,6 +286,7 @@ if(!S||!S.books){
   try{od=JSON.parse(localStorage.getItem("workNotebook.v1")||"{}")||{};ow=localStorage.getItem("workNotebook.wage")||""}catch(e){}
   S={cur:"b0",books:{b0:{name:tr("myBook"),wage:ow,data:od}}};
 }
+if(!S.me)S.me={phone:"",email:"",phoneVerified:false,emailVerified:false};
 function load(){const b=S.books[S.cur];data=b.data;wage=b.wage||"";pay=b.pay||"d"}
 function persist(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}queueCloud();syncPush()}
 load();
@@ -505,7 +506,7 @@ $("lShade").addEventListener("click",e=>{if(e.target===$("lShade"))$("lShade").c
 function amt(days){return pay==="m"?+wage:days*(+wage)}
 function mergeable(o){return !!(o&&o.books&&o.cur&&o.books[o.cur])}
 function emptyAll(){return Object.values(S.books).every(b=>!Object.keys(b.data||{}).length)}
-function applyState(o){S=o;load();$("wage").value=wage;persist();setLang(LANG)}
+function applyState(o){S=o;if(!S.me)S.me={phone:"",email:"",phoneVerified:false,emailVerified:false};load();$("wage").value=wage;persist();setLang(LANG)}
 function queueCloud(){
   if(!cloud)return;clearTimeout(cloudT);
   cloudT=setTimeout(async()=>{try{const at=Date.now();await cloud.set({json:JSON.stringify(S),at});lastBk=at}catch(e){}},1200);
@@ -514,53 +515,104 @@ $("pay").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(b)
 function gStat(){
   $("gStat").textContent=cloud?(lastBk?tr("lastBk")+" "+new Date(lastBk).toLocaleString():tr("cloudOn")):tr("cloudOff");
 }
-let sentOtpCode="",sentOtpExp=0;
+
+const PHONE_OTP_API="https://restless-scene-680d.abdcode.workers.dev";
+let sentOtpCode="",sentOtpExp=0,sentOtpTarget="",pendingPhone="";
+
+function normalizePhone(raw){
+  let p=(raw||"").replace(/[^\d+]/g,"").trim();
+  if(!p)return "";
+  if(p.startsWith("00"))p="+"+p.slice(2);
+  if(p.startsWith("+9720"))p="+972"+p.slice(5);
+  else if(p.startsWith("9720"))p="+972"+p.slice(4);
+  else if(p.startsWith("972"))p="+"+p;
+  else if(p.startsWith("0")&&p.length>=9)p="+972"+p.slice(1);
+  else if(!p.startsWith("+"))p="+"+p;
+  return p;
+}
+
 $("gear").onclick=()=>{
   renderRem();refreshPush();
-  const me=S.me||{};$("gPhone").value=me.phone||"";$("gMail").value=me.email||"";
+  const me=S.me||{};
+  $("gPhone").value=me.phone||"";
+  $("gMail").value=me.email||"";
+  $("gMail").style.display="none";
   $("gCloud").dataset.c="";$("gCloud").textContent=tr("cloudRestore");gStat();
   $("otpVerifyBox").style.display="none";$("otpCodeInput").value="";$("otpVerifyMsg").textContent="";
+  sentOtpCode="";pendingPhone="";
   $("gShade").classList.add("on");
 };
 $("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))$("gShade").classList.remove("on")});
+
 $("gSave").onclick=async()=>{
+  const rawPhone=$("gPhone").value.trim();
+  const phone=normalizePhone(rawPhone);
+  if(phone)$("gPhone").value=phone;
   const mail=$("gMail").value.trim();
-  S.me={phone:$("gPhone").value.trim(),email:mail,emailVerified:false};
+  const prev=S.me||{};
+
+  if(phone){
+    const alreadyVerified=(prev.phone===phone&&prev.phoneVerified===true);
+    S.me={phone:phone,email:mail,phoneVerified:alreadyVerified,emailVerified:!!prev.emailVerified};
+    persist();
+    toast(tr("saved"));
+
+    if(alreadyVerified){
+      $("otpVerifyBox").style.display="none";
+      $("gShade").classList.remove("on");
+      return;
+    }
+
+    if(PHONE_OTP_API){
+      pendingPhone=phone;
+      sentOtpCode=Math.floor(100000+Math.random()*900000).toString();
+      sentOtpExp=Date.now()+15*60*1000;
+      sentOtpTarget="phone";
+      try{
+        const res=await fetch(PHONE_OTP_API+"/send-sms",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({phone:phone,code:sentOtpCode})
+        });
+        if(!res.ok)throw new Error("SMS request failed");
+        $("otpVerifyBox").style.display="block";
+        $("otpCodeInput").value="";
+        $("otpVerifyMsg").textContent="تم إرسال الرمز إلى "+phone+" — أدخله مرة واحدة للتأكيد.";
+        return;
+      }catch(err){
+        console.error(err);
+        $("otpVerifyBox").style.display="block";
+        $("otpVerifyMsg").textContent="تعذر إرسال الرمز للرقم، تحقق من إعدادات Twilio أو Worker.";
+        return;
+      }
+    }
+    $("gShade").classList.remove("on");
+    return;
+  }
+
+  S.me={phone:"",email:mail,phoneVerified:false,emailVerified:!!prev.emailVerified};
   persist();
   toast(tr("saved"));
-  if(mail&&window.emailjs){
-    sentOtpCode=Math.floor(100000+Math.random()*900000).toString();
-    sentOtpExp=Date.now()+15*60*1000;
-    const expiry=new Date(sentOtpExp);
-    const time=expiry.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-    try{
-      await emailjs.send("service_gehhxjs","template_gj7tnqi",{email:mail,passcode:sentOtpCode,time:time});
-      $("otpVerifyBox").style.display="block";
-      $("otpCodeInput").value="";
-      $("otpVerifyMsg").textContent="تم إرسال الرمز إلى "+mail+" — أدخله هنا لتأكيده.";
-    }catch(err){
-      console.error(err);
-      $("otpVerifyBox").style.display="block";
-      $("otpVerifyMsg").textContent="تعذر إرسال الرمز، تحقق من الإنترنت أو إعدادات القالب.";
-    }
-  }else{
-    $("gShade").classList.remove("on");
-  }
+  $("gShade").classList.remove("on");
 };
+
 $("otpConfirmBtn").onclick=()=>{
   const code=$("otpCodeInput").value.trim();
   if(!sentOtpCode)return $("otpVerifyMsg").textContent="اضغط حفظ أولاً لإرسال رمز جديد.";
   if(Date.now()>sentOtpExp)return $("otpVerifyMsg").textContent="انتهت صلاحية الرمز، اضغط حفظ لإرسال رمز جديد.";
   if(code===sentOtpCode){
-    S.me=Object.assign({},S.me,{emailVerified:true});
+    const targetPhone=pendingPhone||normalizePhone($("gPhone").value.trim());
+    S.me=Object.assign({},S.me,{phone:targetPhone,phoneVerified:true});
     persist();
-    $("otpVerifyMsg").textContent="تم تأكيد الرمز بنجاح ✓";
-    toast("تم تأكيد بريدك بنجاح");
-    setTimeout(()=>$("gShade").classList.remove("on"),700);
+    sentOtpCode="";pendingPhone="";
+    $("otpVerifyMsg").textContent="تم تأكيد الرقم بنجاح ✓ — لن يُطلب منك مرة أخرى لهذا الرقم.";
+    toast("تم تأكيد الرقم بنجاح");
+    setTimeout(()=>$("gShade").classList.remove("on"),650);
   }else{
-    $("otpVerifyMsg").textContent="الرمز غير صحيح، تأكد من الرمز الذي وصلك على الجيميل.";
+    $("otpVerifyMsg").textContent="الرمز غير صحيح، تأكد من الرمز الذي وصلك.";
   }
 };
+
 $("gExport").onclick=async()=>{
   const ok=await saveFile({name:"work-notebook-backup.json",blob:new Blob([JSON.stringify(S)],{type:"application/json"})});
   if(!ok)toast(tr("noDl"));
@@ -596,9 +648,7 @@ setLang(LANG);
   }catch(e){cloud=null}
 })();
 
-// ===== Rating (first open) =====
-// Paste your Cloudflare Worker address here to receive ratings, e.g. "https://rate.yourname.workers.dev"
-const API="";   // ← ضع هنا رابط الـ Worker مثل: "https://notebook.yourname.workers.dev"
+const API="";
 const RATE_URL=API?API+"/rate":"";
 const RK="workNotebook.rated",RQ="workNotebook.rq";
 let stars=0;
@@ -633,7 +683,6 @@ $("rLater").onclick=rateDone;
 showRate();flushRatings();
 $("nudge").onclick=()=>{const t=new Date();Y=t.getFullYear();M=t.getMonth();render();openSheet(key(Y,M,t.getDate()),t.getDate())};
 
-// ===== Daily reminder (calendar file) + home-screen icon =====
 const rem=()=>S.rem||(S.rem={time:"18:00",days:[0,1,2,3,4]});
 function renderRem(){
   const r=rem();$("rTime").value=r.time;
@@ -657,7 +706,6 @@ $("remAdd").onclick=async()=>{
 
 render();
 
-// ===== Real push reminders (needs the Worker, see API above) =====
 const PUSH_OK="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
 const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
