@@ -107,7 +107,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .about .logo{width:56px;height:56px;margin:0 auto 10px;border-radius:16px;background:#0f1722;color:#5eead4;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(94,234,212,.3),0 8px 20px rgba(20,184,166,.2)}
 .brand{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:25px;letter-spacing:.3px;direction:ltr}
 .brand span{color:#14b8a6}
-.aname{font-weight:800;margin-top:2px;font-size:16px}
 .about p{margin:6px 0 14px;color:var(--mute);font-size:13.5px;line-height:1.7}
 .links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .lk{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-weight:800;font-size:14px}
@@ -122,6 +121,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .mail-row{display:flex;gap:8px;align-items:center}
 .mail-row .verify-btn{flex:0 0 auto;padding:11px 14px;border-radius:12px;border:0;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
 .mail-row .verify-btn.done{background:var(--work);color:#fff}
+.save-status{margin-top:8px;font-size:13.5px;font-weight:700;color:var(--work);min-height:18px}
 </style>
 </head>
 <body>
@@ -207,26 +207,28 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
     </div>
   </div>
   <div id="mailOtpBox" style="display:none;margin-top:10px">
-    <label for="mailOtpInput">أدخل الكود (6 أرقام)</label>
+    <label for="mailOtpInput">أدخل الكود اللي وصلك على الإيميل (6 أرقام)</label>
     <div class="hrs">
       <input id="mailOtpInput" type="text" inputmode="numeric" maxlength="6" placeholder="123456">
       <button type="button" class="save" id="mailConfirmOtpBtn" style="flex:0 0 auto;padding:0 16px;font-size:14px">تأكيد</button>
     </div>
     <div class="none" id="mailOtpMsg" style="padding:6px 0 0;font-size:13px"></div>
   </div>
+  <div class="acts"><button class="save" id="gSave"></button></div>
+  <div class="save-status" id="gSaveStatus"></div>
+
   <label id="gBackL" style="margin-top:16px"></label>
   <div class="share" style="margin-top:6px"><button id="gExport"></button><button id="gImport"></button></div>
   <input type="file" id="gFile" accept=".json,application/json" hidden>
   <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="gCloud"></button></div>
   <div class="none" id="gStat" style="padding:8px 0 0;font-size:13px"></div>
-  <div class="acts"><button class="save" id="gSave"></button></div>
   <div class="aboutT" id="remT"></div>
   <p id="remD" style="margin:0 0 10px;color:var(--mute);font-size:13.5px;line-height:1.6"></p>
   <div class="hrs" style="margin-bottom:10px"><input id="rTime" type="time" style="text-align:center"></div>
   <div id="rDays" style="display:flex;gap:6px;justify-content:center;margin-bottom:12px"></div>
   <div class="share" style="grid-template-columns:1fr;margin-top:0"><button id="remAdd"></button></div>
   <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="pushBtn"></button></div>
-  <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="testNotifBtn">إرسال إشعار تجريبي الآن</button></div>
+  <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="testNotifBtn">إرسال إشعار حقيقي الآن</button></div>
   <div class="none" id="pushStat" style="padding:6px 0 0;font-size:13px"></div>
   <div class="aboutT" id="homeT"></div>
   <p id="homeD" style="margin:0;color:var(--mute);font-size:13.5px;line-height:1.7"></p>
@@ -234,7 +236,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   <div class="about">
     <div class="logo"><svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 14 8 24l10 10M30 14l10 10-10 10"/></svg></div>
     <div class="brand">Abd<span>Code</span></div>
-    <div class="aname" id="aName"></div>
     <p id="aDesc"></p>
     <div class="links">
       <a class="lk site" href="https://abdcode.pages.dev" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg><span id="lkSiteT"></span></a>
@@ -260,12 +261,12 @@ const I={
 ar:{title:"دفتر أيام العمل",days:"أيام عمل",hours:"ساعات",amount:"المبلغ",wageLbl:"أجرة اليوم:",wagePh:"اختياري",work:"عملت",off:"إجازة",abs:"غياب",notesH:"ملاحظات الشهر",wa:"إرسال بالواتساب",pdf:"تحميل PDF",hrsLbl:"عدد الساعات",noteLbl:"ملاحظة",notePh:"شو اشتغلت اليوم؟",save:"حفظ",del:"حذف",bName:"اسم القائمة (شخص أو شغلة)",bPh:"مثلاً: شغل مع أبو أحمد",langT:"اللغة",hr:"ساعة",empty:"اضغط على أي يوم لتسجّل فيه.",list:"قائمة",editList:"تعديل القائمة",newList:"قائمة جديدة",confirmDel:"تأكيد حذف القائمة وكل أيامها؟",day:"اليوم",status:"الحالة",hoursCol:"الساعات",noteCol:"ملاحظة",workDays:"أيام العمل",hoursTot:"الساعات",amountTot:"المبلغ",myBook:"دفتري",noRows:"ما في أيام مسجّلة بهالشهر",preparing:"عم بجهّز الـ PDF…",tapSend:"اضغط مرة ثانية للإرسال",noDl:"ما زبط التحميل هون",fail:"ما زبطت العملية",prev:"الشهر السابق",next:"الشهر التالي"},
 he:{title:"יומן ימי עבודה",days:"ימי עבודה",hours:"שעות",amount:"סכום",wageLbl:"שכר ליום:",wagePh:"אופציונלי",work:"עבדתי",off:"חופשה",abs:"היעדרות",notesH:"הערות החודש",wa:"שליחה בוואטסאפ",pdf:"הורדת PDF",hrsLbl:"מספר שעות",noteLbl:"הערה",notePh:"מה עבדת היום?",save:"שמירה",del:"מחיקה",bName:"שם הרשימה (אדם או עבודה)",bPh:"למשל: עבודה עם דני",langT:"שפה",hr:"שעות",empty:"לחצו על יום כדי לרשום בו.",list:"רשימה",editList:"עריכת רשימה",newList:"רשימה חדשה",confirmDel:"לאשר מחיקת הרשימה וכל הימים שלה?",day:"יום",status:"סטטוס",hoursCol:"שעות",noteCol:"הערה",workDays:"ימי עבודה",hoursTot:"שעות",amountTot:"סכום",myBook:"היומן שלי",noRows:"אין ימים רשומים בחודש הזה",preparing:"מכין PDF…",tapSend:"לחצו שוב לשליחה",noDl:"ההורדה לא זמינה כאן",fail:"הפעולה נכשלה",prev:"החודש הקודם",next:"החודש הבא"},
 en:{title:"Work Days Notebook",days:"Work days",hours:"Hours",amount:"Amount",wageLbl:"Daily wage:",wagePh:"Optional",work:"Worked",off:"Day off",abs:"Absent",notesH:"This month",wa:"Send on WhatsApp",pdf:"Download PDF",hrsLbl:"Hours worked",noteLbl:"Note",notePh:"What did you work on?",save:"Save",del:"Delete",bName:"List name (person or job)",bPh:"e.g. Work with Sam",langT:"Language",hr:"hrs",empty:"Tap any day to log it.",list:"List",editList:"Edit list",newList:"New list",confirmDel:"Delete this list and all its days?",day:"Day",status:"Status",hoursCol:"Hours",noteCol:"Note",workDays:"Work days",hoursTot:"Hours",amountTot:"Amount",myBook:"My notebook",noRows:"No days logged this month",preparing:"Preparing PDF…",tapSend:"Tap again to send",noDl:"Download isn’t available here",fail:"Something went wrong",prev:"Previous month",next:"Next month"}};
-Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"الإيميل",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",mailPh:"الإيميل",saved:"انحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطي",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
+Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"الإيميل",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",mailPh:"الإيميل",saved:"تم الحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطي",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
 Object.assign(I.he,{payD:"יומי",payM:"חודשי",wagePh:"שכר ליום",salaryPh:"משכורת חודשית",settings:"הגדרות",contactL:"אימייל",backL:"גיבוי",export:"שמירת גיבוי לקובץ",import:"שחזור מקובץ",cloudRestore:"שחזור מהחשבון",mailPh:"אימייל",saved:"נשמר",restored:"הנתונים שוחזרו מהגיבוי",cloudOn:"גיבוי אוטומטי פעיל בחשבון שלך",cloudOff:"גיבוי אוטומטי לא זמין כאן — השתמשו בגיבוי לקובץ",lastBk:"גיבוי אחרון:",noBk:"אין גיבוי שמור",badFile:"הקובץ לא תקין",confirmRestore:"לאשר החלפה?"});
 Object.assign(I.en,{payD:"Daily",payM:"Monthly",wagePh:"Daily wage",salaryPh:"Monthly salary",settings:"Settings",contactL:"Email",backL:"Backup",export:"Save backup file",import:"Restore from file",cloudRestore:"Restore from my account",mailPh:"Email",saved:"Saved",restored:"Your data was restored from backup",cloudOn:"Automatic backup is on for your account",cloudOff:"Automatic backup isn’t available here — use the backup file",lastBk:"Last backup:",noBk:"No backup saved",badFile:"That file isn’t valid",confirmRestore:"Tap again to replace"});
-Object.assign(I.ar,{aboutT:"حول وحقوق",author:"عبد أبو عرار",aboutD:"دفتر بسيط لتسجيل أيام عملك وساعاتك وأجرتك، وبتبعته PDF أو واتساب بضغطة.",siteL:"موقعي",ytL:"قناتي على يوتيوب",rights:"© 2026 Abd Code — جميع الحقوق محفوظة"});
-Object.assign(I.he,{aboutT:"אודות וזכויות",author:"עבד אבו ערער",aboutD:"יומן פשוט לרישום ימי העבודה, השעות והשכר שלך, ושליחה כ-PDF או בוואטסאפ בלחיצה.",siteL:"האתר שלי",ytL:"ערוץ היוטיוב שלי",rights:"© 2026 Abd Code — כל הזכויות שמורות"});
-Object.assign(I.en,{aboutT:"About & rights",author:"Abd Abu Arar",aboutD:"A simple notebook for your work days, hours and pay — send it as a PDF or on WhatsApp in one tap.",siteL:"My website",ytL:"My YouTube channel",rights:"© 2026 Abd Code — All rights reserved"});
+Object.assign(I.ar,{aboutT:"حول وحقوق",aboutD:"دفتر بسيط لتسجيل أيام عملك وساعاتك وأجرتك، وبتبعته PDF أو واتساب بضغطة.",siteL:"موقعي",ytL:"قناتي على يوتيوب",rights:"© 2026 Abd Code — جميع الحقوق محفوظة"});
+Object.assign(I.he,{aboutT:"אודות וזכויות",aboutD:"יומן פשוט לרישום ימי העבודה, השעות והשכר שלך, ושליחה כ-PDF או בוואטסאפ בלחיצה.",siteL:"האתר שלי",ytL:"ערוץ היוטיוב שלי",rights:"© 2026 Abd Code — כל הזכויות שמורות"});
+Object.assign(I.en,{aboutT:"About & rights",aboutD:"A simple notebook for your work days, hours and pay — send it as a PDF or on WhatsApp in one tap.",siteL:"My website",ytL:"My YouTube channel",rights:"© 2026 Abd Code — All rights reserved"});
 Object.assign(I.ar,{rateT:"كيف ولا الدفتر؟",rateD:"قيّمه بالنجوم واكتب رأيك، بيساعدني أحسّنه.",ratePh:"اكتب تعليقك (اختياري)",rateSend:"إرسال",rateLater:"مش هلأ",pickStars:"اختار عدد النجوم",thanks:"شكراً إلك!"});
 Object.assign(I.he,{rateT:"איך היומן?",rateD:"דרגו בכוכבים וכתבו את דעתכם, זה עוזר לי לשפר.",ratePh:"כתבו תגובה (אופציונלי)",rateSend:"שליחה",rateLater:"לא עכשיו",pickStars:"בחרו מספר כוכבים",thanks:"תודה!"});
 Object.assign(I.en,{rateT:"How do you like it?",rateD:"Rate it and leave a comment — it helps me improve it.",ratePh:"Your comment (optional)",rateSend:"Send",rateLater:"Not now",pickStars:"Pick a star rating",thanks:"Thank you!"});
@@ -275,9 +276,33 @@ Object.assign(I.en,{remT:"Daily reminder",remD:"Pick a time and days and we’ll
 Object.assign(I.ar,{nudge:"اليوم ما سجّلت يوم شغلك — اضغط لتسجّل"});
 Object.assign(I.he,{nudge:"היום עדיין לא רשמת — לחצו כדי לרשום"});
 Object.assign(I.en,{nudge:"You haven’t logged today — tap to log"});
-Object.assign(I.ar,{pushOn:"تفعيل إشعار التذكير",pushOff:"إيقاف إشعار التذكير",pushOk:"الإشعارات مفعّلة ✓ — سيتم تذكيرك في الوقت المحدد إذا لم تسجل اليوم",pushNeedHome:"على الآيفون: أضف التطبيق للشاشة الرئيسية أولاً وافتحه منها",pushDenied:"الإشعارات مرفوضة — فعّلها من إعدادات المتصفح أو الجوال",pushNoApi:"التذكير المحلي مفعّل ✓ (ولإشعارات الخلفية بدون فتح التطبيق أضف رابط الـ Worker)",pushFail:"ما زبط تفعيل الإشعار"});
-Object.assign(I.he,{pushOn:"הפעלת התראת תזכורת",pushOff:"כיבוי התראת התזכורת",pushOk:"ההתראות פעילות ✓ — תקבלו תזכורת בזמן שנבחר אם לא נרשמה עבודה היום",pushNeedHome:"באייפון: הוסיפו קודם למסך הבית ופתחו משם",pushDenied:"ההתראות חסומות — הפעילו אותן בהגדרות הדפדפן או הטלפון",pushNoApi:"התזכורת המקומית פעילה ✓",pushFail:"ההפעלה נכשלה"});
-Object.assign(I.en,{pushOn:"Turn on reminder notifications",pushOff:"Turn off reminder notifications",pushOk:"Notifications are on \u2713 \u2014 you get reminded at your chosen time if today isn’t logged",pushNeedHome:"On iPhone: add the app to your Home Screen first, then open it from there",pushDenied:"Notifications are blocked \u2014 allow them in your browser or phone settings",pushNoApi:"Local notifications are active \u2713",pushFail:"Couldn\u2019t turn on notifications"});
+Object.assign(I.ar,{pushOn:"تفعيل إشعار التذكير",pushOff:"إيقاف إشعار التذكير",pushOk:"الإشعارات مفعّلة ✓",pushNeedHome:"على الآيفون: أضف التطبيق للشاشة الرئيسية أولاً وافتحه منها",pushDenied:"الإشعارات مرفوضة — فعّلها من إعدادات المتصفح أو الجوال",pushNoApi:"التذكير المحلي مفعّل ✓",pushFail:"ما زبط تفعيل الإشعار"});
+Object.assign(I.he,{pushOn:"הפעלת התראת תזכורת",pushOff:"כיבוי התראת התזכורת",pushOk:"ההתראות פעילות ✓",pushNeedHome:"באייפון: הוסיפו קודם למסך הבית ופתחו משם",pushDenied:"ההתראות חסומות — הפעילו אותן בהגדרות הדפדפן או הטלפון",pushNoApi:"התזכורת המקומית פעילה ✓",pushFail:"ההפעלה נכשלה"});
+Object.assign(I.en,{pushOn:"Turn on reminder notifications",pushOff:"Turn off reminder notifications",pushOk:"Notifications are on ✓",pushNeedHome:"On iPhone: add the app to your Home Screen first, then open it from there",pushDenied:"Notifications are blocked — allow them in your browser or phone settings",pushNoApi:"Local notifications are active ✓",pushFail:"Couldn’t turn on notifications"});
+const RANDOM_REMINDERS={
+  ar:[
+    "ما نسيت تسجّل يوم شغلك اليوم؟ افتح الدفتر وسجّله هلق 📒",
+    "تذكير سريع: اليوم لسا ما تسجّل في دفتر أيام العمل ⏱️",
+    "إذا اشتغلت اليوم أو أخذت إجازة، سجّلها قبل ما تنسى ✅",
+    "دفتر شغلك عم بيستناك — سجّل يومك وساعاتك اليوم 💼"
+  ],
+  he:[
+    "תזכורת: עדיין לא רשמת את יום העבודה של היום 📒",
+    "אל תשכחו לעדכן את יומן העבודה להיום ⏱️",
+    "עבדתם היום או יצאתם לחופשה? עדכנו עכשיו ✅",
+    "היומן מחכה לעדכון של היום 💼"
+  ],
+  en:[
+    "Quick reminder: you haven’t logged today’s work yet 📒",
+    "Don’t forget to update your work notebook for today ⏱️",
+    "Worked today or took a day off? Log it before you forget ✅",
+    "Your notebook is waiting — log today’s entry 💼"
+  ]
+};
+function pickRandomReminder(){
+  const list=RANDOM_REMINDERS[LANG]||RANDOM_REMINDERS.ar;
+  return list[Math.floor(Math.random()*list.length)];
+}
 const MO={ar:MONTHS,he:["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"],en:["January","February","March","April","May","June","July","August","September","October","November","December"]};
 const WDL={ar:WD,he:["א","ב","ג","ד","ה","ו","ש"],en:["S","M","T","W","T","F","S"]};
 const LK="workNotebook.lang";
@@ -496,7 +521,7 @@ function setLang(l){
   MONTHS=MO[l];WD=WDL[l];SN={w:tr("work"),o:tr("off"),a:tr("abs")};
   const h=document.documentElement;h.lang=l;h.dir=RTL?"rtl":"ltr";
   document.title=tr("title");try{caches.open("wn-meta").then(c=>c.put("lang",new Response(l)))}catch(e){}
-  [["#ttl","title"],["h2","notesH"],["label[for=hrs]","hrsLbl"],["label[for=note]","noteLbl"],["#save","save"],["#del","del"],["label[for=bName]","bName"],["#bSave","save"],["#lTitle","langT"],["#aTitle","aboutT"],["#aName","author"],["#aDesc","aboutD"],["#lkSiteT","siteL"],["#lkYtT","ytL"],["#aRights","rights"],["#rTitle","rateT"],["#rDesc","rateD"],["#rSend","rateSend"],["#rLater","rateLater"],["#remT","remT"],["#remD","remD"],["#remAdd","remAdd"],["#homeT","homeT"]].forEach(([s,k])=>{document.querySelector(s).textContent=tr(k)});
+  [["#ttl","title"],["h2","notesH"],["label[for=hrs]","hrsLbl"],["label[for=note]","noteLbl"],["#save","save"],["#del","del"],["label[for=bName]","bName"],["#bSave","save"],["#lTitle","langT"],["#aTitle","aboutT"],["#aDesc","aboutD"],["#lkSiteT","siteL"],["#lkYtT","ytL"],["#aRights","rights"],["#rTitle","rateT"],["#rDesc","rateD"],["#rSend","rateSend"],["#rLater","rateLater"],["#remT","remT"],["#remD","remD"],["#remAdd","remAdd"],["#homeT","homeT"]].forEach(([s,k])=>{document.querySelector(s).textContent=tr(k)});
   [[".sum span",["days","hours","amount"]],[".legend span",["work","off","abs"]],["#chips .chip",["work","off","abs"]]].forEach(([s,ks])=>document.querySelectorAll(s).forEach((e,i)=>{e.textContent=tr(ks[i])}));
   $("pay").children[0].textContent=tr("payD");$("pay").children[1].textContent=tr("payM");
   [["gTitle","settings"],["gContactL","contactL"],["gBackL","backL"],["gExport","export"],["gImport","import"],["gCloud","cloudRestore"],["gSave","save"]].forEach(([i,k])=>{$(i).textContent=tr(k)});
@@ -524,12 +549,14 @@ function gStat(){
   $("gStat").textContent=cloud?(lastBk?tr("lastBk")+" "+new Date(lastBk).toLocaleString():tr("cloudOn")):tr("cloudOff");
 }
 
+// ===== Email OTP + Save on same page =====
+const EMAIL_OTP_API=""; // ضع رابط الـ Worker هنا لإرسال الكود الحقيقي على الإيميل
 let mailOtpCode="",mailOtpExp=0,pendingMail="",mailVerifiedInSession=false;
 
 function updateMailVerifyBtnState(verified){
   const btn=$("mailStartVerifyBtn");
   if(verified){
-    btn.textContent="تم تأكد الكود";
+    btn.textContent="تم التفعيل";
     btn.classList.add("done");
   }else{
     btn.textContent="تأكد";
@@ -541,6 +568,7 @@ $("gMail").addEventListener("input",()=>{
   const curMail=$("gMail").value.trim();
   const isSameVerified=!!(S.me&&S.me.email===curMail&&S.me.emailVerified);
   mailVerifiedInSession=isSameVerified;
+  $("gSaveStatus").textContent="";
   updateMailVerifyBtnState(isSameVerified);
 });
 
@@ -553,13 +581,14 @@ $("gear").onclick=()=>{
   $("mailOtpBox").style.display="none";
   $("mailOtpInput").value="";
   $("mailOtpMsg").textContent="";
+  $("gSaveStatus").textContent="";
   mailOtpCode="";pendingMail="";
   $("gCloud").dataset.c="";$("gCloud").textContent=tr("cloudRestore");gStat();
   $("gShade").classList.add("on");
 };
 $("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))$("gShade").classList.remove("on")});
 
-$("mailStartVerifyBtn").onclick=()=>{
+$("mailStartVerifyBtn").onclick=async()=>{
   const mail=$("gMail").value.trim();
   if(!mail||!mail.includes("@")){
     $("mailOtpBox").style.display="block";
@@ -571,7 +600,27 @@ $("mailStartVerifyBtn").onclick=()=>{
   mailOtpExp=Date.now()+15*60*1000;
   $("mailOtpBox").style.display="block";
   $("mailOtpInput").value="";
-  $("mailOtpMsg").textContent="تم تجهيز كود التحقق ("+mailOtpCode+") للإيميل "+mail+" — أدخله واضغط تأكيد.";
+
+  if(!EMAIL_OTP_API){
+    $("mailOtpMsg").textContent="لإرسال كود حقيقي على الإيميل، اربط رابط EMAIL_OTP_API. الكود الحالي: "+mailOtpCode;
+    return;
+  }
+
+  $("mailOtpMsg").textContent="جاري إرسال الكود إلى "+mail+"...";
+  try{
+    const res=await fetch(EMAIL_OTP_API+"/send-email-otp",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({email:mail,code:mailOtpCode})
+    });
+    if(!res.ok){
+      $("mailOtpMsg").textContent="تعذر إرسال الكود على الإيميل، تحقق من رابط الـ Worker.";
+      return;
+    }
+    $("mailOtpMsg").textContent="تم إرسال الكود إلى "+mail+" — أدخله واضغط تأكيد.";
+  }catch(_){
+    $("mailOtpMsg").textContent="تعذر الاتصال بخدمة إرسال الإيميل.";
+  }
 };
 
 $("mailConfirmOtpBtn").onclick=()=>{
@@ -582,8 +631,8 @@ $("mailConfirmOtpBtn").onclick=()=>{
     mailVerifiedInSession=true;
     mailOtpCode="";
     updateMailVerifyBtnState(true);
-    $("mailOtpMsg").textContent="تم تأكد الكود";
-    toast("تم تأكد الكود");
+    $("mailOtpMsg").textContent="تم التفعيل";
+    toast("تم التفعيل");
   }else{
     $("mailOtpMsg").textContent="الكود غير صحيح.";
   }
@@ -594,8 +643,8 @@ $("gSave").onclick=()=>{
   const verified=!!(mail&&mailVerifiedInSession&&(!pendingMail||pendingMail===mail));
   S.me={email:mail,emailVerified:verified};
   persist();
-  toast(verified?"تم تأكد الكود وحفظ الإيميل":tr("saved"));
-  $("gShade").classList.remove("on");
+  $("gSaveStatus").textContent="تم الحفظ";
+  toast("تم الحفظ");
 };
 
 $("gExport").onclick=async()=>{
@@ -685,7 +734,7 @@ $("remAdd").onclick=async()=>{
   for(let i=0;i<8&&!(r.days.includes(d.getDay())&&d>new Date());i++){d.setDate(d.getDate()+1);d.setHours(hh,mm)}
   const ds=d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"T"+p(hh)+p(mm)+"00";
   const n=new Date(),st=n.getUTCFullYear()+p(n.getUTCMonth()+1)+p(n.getUTCDate())+"T"+p(n.getUTCHours())+p(n.getUTCMinutes())+"00Z";
-  const by=["SU","MO","TU","WE","TH","FR","SA"],txt=tr("remAsk");
+  const by=["SU","MO","TU","WE","TH","FR","SA"],txt=pickRandomReminder();
   const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//AbdCode//WorkNotebook//EN","BEGIN:VEVENT","UID:worknotebook-reminder@abdcode","DTSTAMP:"+st,"DTSTART:"+ds,"DURATION:PT15M","RRULE:FREQ=WEEKLY;BYDAY="+r.days.slice().sort().map(i=>by[i]).join(","),"SUMMARY:📒 "+txt,"BEGIN:VALARM","TRIGGER:PT0M","ACTION:DISPLAY","DESCRIPTION:"+txt,"END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
   const ok=await saveFile({name:"work-reminder.ics",blob:new Blob([ics],{type:"text/calendar"})});
   toast(ok?tr("remDone"):tr("noDl"));
@@ -693,7 +742,7 @@ $("remAdd").onclick=async()=>{
 
 render();
 
-// ===== Notifications (Local reminder + optional Push Worker) =====
+// ===== Real Random Daily Notifications =====
 const PUSH_OK="serviceWorker" in navigator&&"PushManager" in window;
 const NOTIF_OK="Notification" in window;
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
@@ -789,7 +838,7 @@ function checkLocalReminder(){
   if(hasTodayEntry)return;
   r.lastNotif=todayKey;
   persist();
-  showAppNotification(tr("title"),tr("remAsk"));
+  showAppNotification(tr("title"),pickRandomReminder());
 }
 
 $("pushBtn").onclick=async()=>{
@@ -798,12 +847,13 @@ $("pushBtn").onclick=async()=>{
 };
 $("testNotifBtn").onclick=async()=>{
   if(!NOTIF_OK)return toast(tr("pushFail"));
+  if(isIOS&&!standalone())return toast(tr("pushNeedHome"));
   if(Notification.permission!=="granted"){
     const perm=await Notification.requestPermission();
     if(perm!=="granted")return toast(tr("pushDenied"));
   }
-  const ok=await showAppNotification(tr("title"),tr("remAsk"));
-  toast(ok?"تم إرسال الإشعار التجريبي":tr("pushFail"));
+  const ok=await showAppNotification(tr("title"),pickRandomReminder());
+  toast(ok?"تم إرسال الإشعار":tr("pushFail"));
 };
 
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
