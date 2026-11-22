@@ -119,6 +119,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .top .ghost{margin-inline-end:8px}
 .month{min-width:96px;font-size:16px}
 .chip.sel[data-l]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.mail-row{display:flex;gap:8px;align-items:center}
+.mail-row .verify-btn{flex:0 0 auto;padding:11px 14px;border-radius:12px;border:0;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
+.mail-row .verify-btn.done{background:var(--work);color:#fff}
 </style>
 </head>
 <body>
@@ -198,7 +201,18 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   <h3 id="gTitle"></h3>
   <label id="gContactL" for="gMail"></label>
   <div id="contactFields">
-    <input id="gMail" type="email" inputmode="email" autocomplete="email">
+    <div class="mail-row">
+      <input id="gMail" type="email" inputmode="email" autocomplete="email">
+      <button type="button" class="verify-btn" id="mailStartVerifyBtn">تأكد</button>
+    </div>
+  </div>
+  <div id="mailOtpBox" style="display:none;margin-top:10px">
+    <label for="mailOtpInput">أدخل الكود (6 أرقام)</label>
+    <div class="hrs">
+      <input id="mailOtpInput" type="text" inputmode="numeric" maxlength="6" placeholder="123456">
+      <button type="button" class="save" id="mailConfirmOtpBtn" style="flex:0 0 auto;padding:0 16px;font-size:14px">تأكيد</button>
+    </div>
+    <div class="none" id="mailOtpMsg" style="padding:6px 0 0;font-size:13px"></div>
   </div>
   <label id="gBackL" style="margin-top:16px"></label>
   <div class="share" style="margin-top:6px"><button id="gExport"></button><button id="gImport"></button></div>
@@ -246,7 +260,7 @@ const I={
 ar:{title:"دفتر أيام العمل",days:"أيام عمل",hours:"ساعات",amount:"المبلغ",wageLbl:"أجرة اليوم:",wagePh:"اختياري",work:"عملت",off:"إجازة",abs:"غياب",notesH:"ملاحظات الشهر",wa:"إرسال بالواتساب",pdf:"تحميل PDF",hrsLbl:"عدد الساعات",noteLbl:"ملاحظة",notePh:"شو اشتغلت اليوم؟",save:"حفظ",del:"حذف",bName:"اسم القائمة (شخص أو شغلة)",bPh:"مثلاً: شغل مع أبو أحمد",langT:"اللغة",hr:"ساعة",empty:"اضغط على أي يوم لتسجّل فيه.",list:"قائمة",editList:"تعديل القائمة",newList:"قائمة جديدة",confirmDel:"تأكيد حذف القائمة وكل أيامها؟",day:"اليوم",status:"الحالة",hoursCol:"الساعات",noteCol:"ملاحظة",workDays:"أيام العمل",hoursTot:"الساعات",amountTot:"المبلغ",myBook:"دفتري",noRows:"ما في أيام مسجّلة بهالشهر",preparing:"عم بجهّز الـ PDF…",tapSend:"اضغط مرة ثانية للإرسال",noDl:"ما زبط التحميل هون",fail:"ما زبطت العملية",prev:"الشهر السابق",next:"الشهر التالي"},
 he:{title:"יומן ימי עבודה",days:"ימי עבודה",hours:"שעות",amount:"סכום",wageLbl:"שכר ליום:",wagePh:"אופציונלי",work:"עבדתי",off:"חופשה",abs:"היעדרות",notesH:"הערות החודש",wa:"שליחה בוואטסאפ",pdf:"הורדת PDF",hrsLbl:"מספר שעות",noteLbl:"הערה",notePh:"מה עבדת היום?",save:"שמירה",del:"מחיקה",bName:"שם הרשימה (אדם או עבודה)",bPh:"למשל: עבודה עם דני",langT:"שפה",hr:"שעות",empty:"לחצו על יום כדי לרשום בו.",list:"רשימה",editList:"עריכת רשימה",newList:"רשימה חדשה",confirmDel:"לאשר מחיקת הרשימה וכל הימים שלה?",day:"יום",status:"סטטוס",hoursCol:"שעות",noteCol:"הערה",workDays:"ימי עבודה",hoursTot:"שעות",amountTot:"סכום",myBook:"היומן שלי",noRows:"אין ימים רשומים בחודש הזה",preparing:"מכין PDF…",tapSend:"לחצו שוב לשליחה",noDl:"ההורדה לא זמינה כאן",fail:"הפעולה נכשלה",prev:"החודש הקודם",next:"החודש הבא"},
 en:{title:"Work Days Notebook",days:"Work days",hours:"Hours",amount:"Amount",wageLbl:"Daily wage:",wagePh:"Optional",work:"Worked",off:"Day off",abs:"Absent",notesH:"This month",wa:"Send on WhatsApp",pdf:"Download PDF",hrsLbl:"Hours worked",noteLbl:"Note",notePh:"What did you work on?",save:"Save",del:"Delete",bName:"List name (person or job)",bPh:"e.g. Work with Sam",langT:"Language",hr:"hrs",empty:"Tap any day to log it.",list:"List",editList:"Edit list",newList:"New list",confirmDel:"Delete this list and all its days?",day:"Day",status:"Status",hoursCol:"Hours",noteCol:"Note",workDays:"Work days",hoursTot:"Hours",amountTot:"Amount",myBook:"My notebook",noRows:"No days logged this month",preparing:"Preparing PDF…",tapSend:"Tap again to send",noDl:"Download isn’t available here",fail:"Something went wrong",prev:"Previous month",next:"Next month"}};
-Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"الإيميل",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",mailPh:"الإيميل",saved:"انحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطية",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
+Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"الإيميل",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",mailPh:"الإيميل",saved:"انحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطي",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
 Object.assign(I.he,{payD:"יומי",payM:"חודשי",wagePh:"שכר ליום",salaryPh:"משכורת חודשית",settings:"הגדרות",contactL:"אימייל",backL:"גיבוי",export:"שמירת גיבוי לקובץ",import:"שחזור מקובץ",cloudRestore:"שחזור מהחשבון",mailPh:"אימייל",saved:"נשמר",restored:"הנתונים שוחזרו מהגיבוי",cloudOn:"גיבוי אוטומטי פעיל בחשבון שלך",cloudOff:"גיבוי אוטומטי לא זמין כאן — השתמשו בגיבוי לקובץ",lastBk:"גיבוי אחרון:",noBk:"אין גיבוי שמור",badFile:"הקובץ לא תקין",confirmRestore:"לאשר החלפה?"});
 Object.assign(I.en,{payD:"Daily",payM:"Monthly",wagePh:"Daily wage",salaryPh:"Monthly salary",settings:"Settings",contactL:"Email",backL:"Backup",export:"Save backup file",import:"Restore from file",cloudRestore:"Restore from my account",mailPh:"Email",saved:"Saved",restored:"Your data was restored from backup",cloudOn:"Automatic backup is on for your account",cloudOff:"Automatic backup isn’t available here — use the backup file",lastBk:"Last backup:",noBk:"No backup saved",badFile:"That file isn’t valid",confirmRestore:"Tap again to replace"});
 Object.assign(I.ar,{aboutT:"حول وحقوق",author:"عبد أبو عرار",aboutD:"دفتر بسيط لتسجيل أيام عملك وساعاتك وأجرتك، وبتبعته PDF أو واتساب بضغطة.",siteL:"موقعي",ytL:"قناتي على يوتيوب",rights:"© 2026 Abd Code — جميع الحقوق محفوظة"});
@@ -280,7 +294,7 @@ if(!S||!S.books){
   try{od=JSON.parse(localStorage.getItem("workNotebook.v1")||"{}")||{};ow=localStorage.getItem("workNotebook.wage")||""}catch(e){}
   S={cur:"b0",books:{b0:{name:tr("myBook"),wage:ow,data:od}}};
 }
-if(!S.me)S.me={email:""};
+if(!S.me)S.me={email:"",emailVerified:false};
 function load(){const b=S.books[S.cur];data=b.data;wage=b.wage||"";pay=b.pay||"d"}
 function persist(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}queueCloud();syncPush()}
 load();
@@ -500,7 +514,7 @@ $("lShade").addEventListener("click",e=>{if(e.target===$("lShade"))$("lShade").c
 function amt(days){return pay==="m"?+wage:days*(+wage)}
 function mergeable(o){return !!(o&&o.books&&o.cur&&o.books[o.cur])}
 function emptyAll(){return Object.values(S.books).every(b=>!Object.keys(b.data||{}).length)}
-function applyState(o){S=o;if(!S.me)S.me={email:""};load();$("wage").value=wage;persist();setLang(LANG)}
+function applyState(o){S=o;if(!S.me)S.me={email:"",emailVerified:false};load();$("wage").value=wage;persist();setLang(LANG)}
 function queueCloud(){
   if(!cloud)return;clearTimeout(cloudT);
   cloudT=setTimeout(async()=>{try{const at=Date.now();await cloud.set({json:JSON.stringify(S),at});lastBk=at}catch(e){}},1200);
@@ -510,20 +524,77 @@ function gStat(){
   $("gStat").textContent=cloud?(lastBk?tr("lastBk")+" "+new Date(lastBk).toLocaleString():tr("cloudOn")):tr("cloudOff");
 }
 
+let mailOtpCode="",mailOtpExp=0,pendingMail="",mailVerifiedInSession=false;
+
+function updateMailVerifyBtnState(verified){
+  const btn=$("mailStartVerifyBtn");
+  if(verified){
+    btn.textContent="تم تأكد الكود";
+    btn.classList.add("done");
+  }else{
+    btn.textContent="تأكد";
+    btn.classList.remove("done");
+  }
+}
+
+$("gMail").addEventListener("input",()=>{
+  const curMail=$("gMail").value.trim();
+  const isSameVerified=!!(S.me&&S.me.email===curMail&&S.me.emailVerified);
+  mailVerifiedInSession=isSameVerified;
+  updateMailVerifyBtnState(isSameVerified);
+});
+
 $("gear").onclick=()=>{
   renderRem();refreshPush();
   const me=S.me||{};
   $("gMail").value=me.email||"";
+  mailVerifiedInSession=!!(me.email&&me.emailVerified);
+  updateMailVerifyBtnState(mailVerifiedInSession);
+  $("mailOtpBox").style.display="none";
+  $("mailOtpInput").value="";
+  $("mailOtpMsg").textContent="";
+  mailOtpCode="";pendingMail="";
   $("gCloud").dataset.c="";$("gCloud").textContent=tr("cloudRestore");gStat();
   $("gShade").classList.add("on");
 };
 $("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))$("gShade").classList.remove("on")});
 
+$("mailStartVerifyBtn").onclick=()=>{
+  const mail=$("gMail").value.trim();
+  if(!mail||!mail.includes("@")){
+    $("mailOtpBox").style.display="block";
+    $("mailOtpMsg").textContent="اكتب إيميل صحيح أولاً.";
+    return;
+  }
+  pendingMail=mail;
+  mailOtpCode=Math.floor(100000+Math.random()*900000).toString();
+  mailOtpExp=Date.now()+15*60*1000;
+  $("mailOtpBox").style.display="block";
+  $("mailOtpInput").value="";
+  $("mailOtpMsg").textContent="تم تجهيز كود التحقق ("+mailOtpCode+") للإيميل "+mail+" — أدخله واضغط تأكيد.";
+};
+
+$("mailConfirmOtpBtn").onclick=()=>{
+  const code=$("mailOtpInput").value.trim();
+  if(!mailOtpCode)return $("mailOtpMsg").textContent="اضغط تأكد بجانب الإيميل أولاً.";
+  if(Date.now()>mailOtpExp)return $("mailOtpMsg").textContent="انتهت صلاحية الكود، اضغط تأكد لإرسال كود جديد.";
+  if(code===mailOtpCode){
+    mailVerifiedInSession=true;
+    mailOtpCode="";
+    updateMailVerifyBtnState(true);
+    $("mailOtpMsg").textContent="تم تأكد الكود";
+    toast("تم تأكد الكود");
+  }else{
+    $("mailOtpMsg").textContent="الكود غير صحيح.";
+  }
+};
+
 $("gSave").onclick=()=>{
   const mail=$("gMail").value.trim();
-  S.me={email:mail};
+  const verified=!!(mail&&mailVerifiedInSession&&(!pendingMail||pendingMail===mail));
+  S.me={email:mail,emailVerified:verified};
   persist();
-  toast(tr("saved"));
+  toast(verified?"تم تأكد الكود وحفظ الإيميل":tr("saved"));
   $("gShade").classList.remove("on");
 };
 
