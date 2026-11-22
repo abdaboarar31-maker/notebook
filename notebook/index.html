@@ -552,8 +552,8 @@ function gStat(){
 
 // ===== EmailJS OTP + Save on same page =====
 const EJS_PUBLIC_KEY="n-3RJqeFuNzD-KmW8";
-const EJS_SERVICE_ID="YOUR_SERVICE_ID";
-const EJS_TEMPLATE_ID="YOUR_TEMPLATE_ID";
+const EJS_SERVICE_ID="service_gehhxjs";
+const EJS_TEMPLATE_ID="template_gj7tnqi";
 
 if(window.emailjs&&EJS_PUBLIC_KEY&&EJS_PUBLIC_KEY!=="YOUR_PUBLIC_KEY"){
   try{emailjs.init({publicKey:EJS_PUBLIC_KEY})}catch(_){}
@@ -603,9 +603,9 @@ $("mailStartVerifyBtn").onclick=async()=>{
     $("mailOtpMsg").textContent="اكتب إيميل صحيح أولاً.";
     return;
   }
-  if(!window.emailjs||EJS_SERVICE_ID==="YOUR_SERVICE_ID"||EJS_TEMPLATE_ID==="YOUR_TEMPLATE_ID"){
+  if(!window.emailjs){
     $("mailOtpBox").style.display="block";
-    $("mailOtpMsg").textContent="لسا ناقص Service ID و Template ID في الكود.";
+    $("mailOtpMsg").textContent="تعذر تحميل مكتبة EmailJS.";
     return;
   }
   pendingMail=mail;
@@ -625,7 +625,7 @@ $("mailStartVerifyBtn").onclick=async()=>{
     });
     $("mailOtpMsg").textContent="تم إرسال الكود إلى "+mail+" — أدخله واضغط تأكيد.";
   }catch(_){
-    $("mailOtpMsg").textContent="تعذر إرسال الكود، تحقق من Service ID و Template ID وإعدادات القالب.";
+    $("mailOtpMsg").textContent="تعذر إرسال الكود، تحقق من إعدادات القالب في EmailJS.";
   }
 };
 
