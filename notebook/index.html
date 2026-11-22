@@ -652,5 +652,48 @@ $("pushBtn").onclick=async()=>{(PUSH_OK&&Notification.permission==="granted"&&aw
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 syncPush();
 </script>
+
+
+  <form id="otp-form">
+  <input type="email" id="user-email" placeholder="أدخل بريدك الإلكتروني" required />
+  <button type="submit">إرسال رمز التحقق</button>
+</form>
+<p id="otp-status"></p>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init({ publicKey: "n-3RJqeFuNzD-KmW8" });
+
+  function generateCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  function getExpiryTime(minutes = 15) {
+    const expiry = new Date(Date.now() + minutes * 60 * 1000);
+    return expiry.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  document.getElementById("otp-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const statusEl = document.getElementById("otp-status");
+    const email = document.getElementById("user-email").value.trim();
+    const passcode = generateCode();
+    const time = getExpiryTime(15);
+
+    statusEl.textContent = "جاري الإرسال...";
+
+    try {
+      await emailjs.send("uIVqV8xpe_N3itab5Q7s8", "template_gj7tnqi", {
+        email: email,
+        passcode: passcode,
+        time: time,
+      });
+      statusEl.textContent = "تم إرسال رمز التحقق إلى بريدك الإلكتروني.";
+    } catch (err) {
+      statusEl.textContent = "حدث خطأ أثناء الإرسال، حاول مرة أخرى.";
+      console.error(err);
+    }
+  });
+</script>
 </body>
 </html>
