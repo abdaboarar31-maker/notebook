@@ -198,11 +198,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   <h3 id="gTitle"></h3>
   <label id="gContactL"></label>
   <input id="gPhone" type="tel" inputmode="tel" autocomplete="tel">
-  <input id="gMail" type="email" inputmode="email" autocomplete="email" style="display:none;margin-top:8px">
+  <input id="gMail" type="email" inputmode="email" autocomplete="email" style="margin-top:8px">
   <div id="otpVerifyBox" style="display:none;margin-top:10px">
-    <label for="otpCodeInput">أدخل الرمز الذي وصلك</label>
+    <label for="otpCodeInput">أدخل رمز التحقق (6 أرقام)</label>
     <div class="hrs">
-      <input id="otpCodeInput" type="text" inputmode="numeric" maxlength="6" placeholder="رمز التحقق (6 أرقام)">
+      <input id="otpCodeInput" type="text" inputmode="numeric" maxlength="6" placeholder="123456">
       <button type="button" class="save" id="otpConfirmBtn" style="flex:0 0 auto;padding:0 14px;font-size:14px">تأكيد</button>
     </div>
     <div class="none" id="otpVerifyMsg" style="padding:6px 0 0;font-size:13px"></div>
@@ -286,7 +286,7 @@ if(!S||!S.books){
   try{od=JSON.parse(localStorage.getItem("workNotebook.v1")||"{}")||{};ow=localStorage.getItem("workNotebook.wage")||""}catch(e){}
   S={cur:"b0",books:{b0:{name:tr("myBook"),wage:ow,data:od}}};
 }
-if(!S.me)S.me={phone:"",email:"",phoneVerified:false,emailVerified:false};
+if(!S.me)S.me={phone:"",email:"",phoneVerified:false};
 function load(){const b=S.books[S.cur];data=b.data;wage=b.wage||"";pay=b.pay||"d"}
 function persist(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}queueCloud();syncPush()}
 load();
@@ -506,7 +506,7 @@ $("lShade").addEventListener("click",e=>{if(e.target===$("lShade"))$("lShade").c
 function amt(days){return pay==="m"?+wage:days*(+wage)}
 function mergeable(o){return !!(o&&o.books&&o.cur&&o.books[o.cur])}
 function emptyAll(){return Object.values(S.books).every(b=>!Object.keys(b.data||{}).length)}
-function applyState(o){S=o;if(!S.me)S.me={phone:"",email:"",phoneVerified:false,emailVerified:false};load();$("wage").value=wage;persist();setLang(LANG)}
+function applyState(o){S=o;if(!S.me)S.me={phone:"",email:"",phoneVerified:false};load();$("wage").value=wage;persist();setLang(LANG)}
 function queueCloud(){
   if(!cloud)return;clearTimeout(cloudT);
   cloudT=setTimeout(async()=>{try{const at=Date.now();await cloud.set({json:JSON.stringify(S),at});lastBk=at}catch(e){}},1200);
@@ -517,7 +517,7 @@ function gStat(){
 }
 
 const PHONE_OTP_API="https://restless-scene-680d.abdcode.workers.dev";
-let sentOtpCode="",sentOtpExp=0,sentOtpTarget="",pendingPhone="";
+let sentOtpCode="",sentOtpExp=0,pendingPhone="";
 
 function normalizePhone(raw){
   let p=(raw||"").replace(/[^\d+]/g,"").trim();
@@ -536,7 +536,6 @@ $("gear").onclick=()=>{
   const me=S.me||{};
   $("gPhone").value=me.phone||"";
   $("gMail").value=me.email||"";
-  $("gMail").style.display="none";
   $("gCloud").dataset.c="";$("gCloud").textContent=tr("cloudRestore");gStat();
   $("otpVerifyBox").style.display="none";$("otpCodeInput").value="";$("otpVerifyMsg").textContent="";
   sentOtpCode="";pendingPhone="";
@@ -545,55 +544,48 @@ $("gear").onclick=()=>{
 $("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))$("gShade").classList.remove("on")});
 
 $("gSave").onclick=async()=>{
-  const rawPhone=$("gPhone").value.trim();
-  const phone=normalizePhone(rawPhone);
+  const phone=normalizePhone($("gPhone").value.trim());
   if(phone)$("gPhone").value=phone;
   const mail=$("gMail").value.trim();
   const prev=S.me||{};
 
-  if(phone){
-    const alreadyVerified=(prev.phone===phone&&prev.phoneVerified===true);
-    S.me={phone:phone,email:mail,phoneVerified:alreadyVerified,emailVerified:!!prev.emailVerified};
+  if(!phone){
+    S.me={phone:"",email:mail,phoneVerified:false};
     persist();
     toast(tr("saved"));
-
-    if(alreadyVerified){
-      $("otpVerifyBox").style.display="none";
-      $("gShade").classList.remove("on");
-      return;
-    }
-
-    if(PHONE_OTP_API){
-      pendingPhone=phone;
-      sentOtpCode=Math.floor(100000+Math.random()*900000).toString();
-      sentOtpExp=Date.now()+15*60*1000;
-      sentOtpTarget="phone";
-      try{
-        const res=await fetch(PHONE_OTP_API+"/send-sms",{
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({phone:phone,code:sentOtpCode})
-        });
-        if(!res.ok)throw new Error("SMS request failed");
-        $("otpVerifyBox").style.display="block";
-        $("otpCodeInput").value="";
-        $("otpVerifyMsg").textContent="تم إرسال الرمز إلى "+phone+" — أدخله مرة واحدة للتأكيد.";
-        return;
-      }catch(err){
-        console.error(err);
-        $("otpVerifyBox").style.display="block";
-        $("otpVerifyMsg").textContent="تعذر إرسال الرمز للرقم، تحقق من إعدادات Twilio أو Worker.";
-        return;
-      }
-    }
     $("gShade").classList.remove("on");
     return;
   }
 
-  S.me={phone:"",email:mail,phoneVerified:false,emailVerified:!!prev.emailVerified};
+  const alreadyVerified=(prev.phone===phone&&prev.phoneVerified===true);
+  S.me={phone:phone,email:mail,phoneVerified:alreadyVerified};
   persist();
   toast(tr("saved"));
-  $("gShade").classList.remove("on");
+
+  if(alreadyVerified){
+    $("otpVerifyBox").style.display="none";
+    $("gShade").classList.remove("on");
+    return;
+  }
+
+  pendingPhone=phone;
+  sentOtpCode=Math.floor(100000+Math.random()*900000).toString();
+  sentOtpExp=Date.now()+15*60*1000;
+  try{
+    const res=await fetch(PHONE_OTP_API+"/send-sms",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({phone:phone,code:sentOtpCode})
+    });
+    if(!res.ok)throw new Error("SMS request failed");
+    $("otpVerifyBox").style.display="block";
+    $("otpCodeInput").value="";
+    $("otpVerifyMsg").textContent="تم إرسال الرمز إلى "+phone+" — أدخله مرة واحدة للتأكيد.";
+  }catch(err){
+    console.error(err);
+    $("otpVerifyBox").style.display="block";
+    $("otpVerifyMsg").textContent="تعذر إرسال الرمز إلى "+phone+"، تحقق من إعدادات Twilio أو Worker.";
+  }
 };
 
 $("otpConfirmBtn").onclick=()=>{
@@ -648,7 +640,9 @@ setLang(LANG);
   }catch(e){cloud=null}
 })();
 
-const API="";
+// ===== Rating (first open) =====
+// Paste your Cloudflare Worker address here to receive ratings, e.g. "https://rate.yourname.workers.dev"
+const API="";   // ← ضع هنا رابط الـ Worker مثل: "https://notebook.yourname.workers.dev"
 const RATE_URL=API?API+"/rate":"";
 const RK="workNotebook.rated",RQ="workNotebook.rq";
 let stars=0;
@@ -683,6 +677,7 @@ $("rLater").onclick=rateDone;
 showRate();flushRatings();
 $("nudge").onclick=()=>{const t=new Date();Y=t.getFullYear();M=t.getMonth();render();openSheet(key(Y,M,t.getDate()),t.getDate())};
 
+// ===== Daily reminder (calendar file) + home-screen icon =====
 const rem=()=>S.rem||(S.rem={time:"18:00",days:[0,1,2,3,4]});
 function renderRem(){
   const r=rem();$("rTime").value=r.time;
@@ -706,6 +701,7 @@ $("remAdd").onclick=async()=>{
 
 render();
 
+// ===== Real push reminders (needs the Worker, see API above) =====
 const PUSH_OK="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
 const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
@@ -746,12 +742,6 @@ async function disablePush(){
 $("pushBtn").onclick=async()=>{(PUSH_OK&&Notification.permission==="granted"&&await getSub())?disablePush():enablePush()};
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 syncPush();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>
-  if (window.emailjs) {
-    emailjs.init({ publicKey: "n-3RJqeFuNzD-KmW8" });
-  }
 </script>
 </body>
 </html>
