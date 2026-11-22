@@ -199,6 +199,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   <label id="gContactL"></label>
   <input id="gPhone" type="tel" inputmode="tel" autocomplete="tel">
   <input id="gMail" type="email" inputmode="email" autocomplete="email" style="margin-top:8px">
+  <div id="otpVerifyBox" style="display:none;margin-top:10px">
+    <label for="otpCodeInput">أدخل الرمز الذي وصلك على الجيميل</label>
+    <div class="hrs">
+      <input id="otpCodeInput" type="text" inputmode="numeric" maxlength="6" placeholder="رمز التحقق (6 أرقام)">
+      <button type="button" class="save" id="otpConfirmBtn" style="flex:0 0 auto;padding:0 14px;font-size:14px">تأكيد</button>
+    </div>
+    <div class="none" id="otpVerifyMsg" style="padding:6px 0 0;font-size:13px"></div>
+  </div>
   <label id="gBackL" style="margin-top:16px"></label>
   <div class="share" style="margin-top:6px"><button id="gExport"></button><button id="gImport"></button></div>
   <input type="file" id="gFile" accept=".json,application/json" hidden>
@@ -506,26 +514,51 @@ $("pay").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(b)
 function gStat(){
   $("gStat").textContent=cloud?(lastBk?tr("lastBk")+" "+new Date(lastBk).toLocaleString():tr("cloudOn")):tr("cloudOff");
 }
+let sentOtpCode="",sentOtpExp=0;
 $("gear").onclick=()=>{
   renderRem();refreshPush();
   const me=S.me||{};$("gPhone").value=me.phone||"";$("gMail").value=me.email||"";
   $("gCloud").dataset.c="";$("gCloud").textContent=tr("cloudRestore");gStat();
+  $("otpVerifyBox").style.display="none";$("otpCodeInput").value="";$("otpVerifyMsg").textContent="";
   $("gShade").classList.add("on");
 };
 $("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))$("gShade").classList.remove("on")});
 $("gSave").onclick=async()=>{
   const mail=$("gMail").value.trim();
-  S.me={phone:$("gPhone").value.trim(),email:mail};
+  S.me={phone:$("gPhone").value.trim(),email:mail,emailVerified:false};
   persist();
-  $("gShade").classList.remove("on");
   toast(tr("saved"));
   if(mail&&window.emailjs){
-    const passcode=Math.floor(100000+Math.random()*900000).toString();
-    const expiry=new Date(Date.now()+15*60*1000);
+    sentOtpCode=Math.floor(100000+Math.random()*900000).toString();
+    sentOtpExp=Date.now()+15*60*1000;
+    const expiry=new Date(sentOtpExp);
     const time=expiry.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
     try{
-      await emailjs.send("service_gehhxjs","template_gj7tnqi",{email:mail,passcode:passcode,time:time});
-    }catch(err){console.error(err)}
+      await emailjs.send("service_gehhxjs","template_gj7tnqi",{email:mail,passcode:sentOtpCode,time:time});
+      $("otpVerifyBox").style.display="block";
+      $("otpCodeInput").value="";
+      $("otpVerifyMsg").textContent="تم إرسال الرمز إلى "+mail+" — أدخله هنا لتأكيده.";
+    }catch(err){
+      console.error(err);
+      $("otpVerifyBox").style.display="block";
+      $("otpVerifyMsg").textContent="تعذر إرسال الرمز، تحقق من الإنترنت أو إعدادات القالب.";
+    }
+  }else{
+    $("gShade").classList.remove("on");
+  }
+};
+$("otpConfirmBtn").onclick=()=>{
+  const code=$("otpCodeInput").value.trim();
+  if(!sentOtpCode)return $("otpVerifyMsg").textContent="اضغط حفظ أولاً لإرسال رمز جديد.";
+  if(Date.now()>sentOtpExp)return $("otpVerifyMsg").textContent="انتهت صلاحية الرمز، اضغط حفظ لإرسال رمز جديد.";
+  if(code===sentOtpCode){
+    S.me=Object.assign({},S.me,{emailVerified:true});
+    persist();
+    $("otpVerifyMsg").textContent="تم تأكيد الرمز بنجاح ✓";
+    toast("تم تأكيد بريدك بنجاح");
+    setTimeout(()=>$("gShade").classList.remove("on"),700);
+  }else{
+    $("otpVerifyMsg").textContent="الرمز غير صحيح، تأكد من الرمز الذي وصلك على الجيميل.";
   }
 };
 $("gExport").onclick=async()=>{
