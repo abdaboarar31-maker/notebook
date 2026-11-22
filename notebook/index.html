@@ -11,6 +11,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>دفتر أيام العمل</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@700;800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 :root{
   --bg:#f3efe6;--card:#fffdf8;--ink:#23211c;--mute:#7a7467;--line:#e2dccd;
@@ -549,8 +550,15 @@ function gStat(){
   $("gStat").textContent=cloud?(lastBk?tr("lastBk")+" "+new Date(lastBk).toLocaleString():tr("cloudOn")):tr("cloudOff");
 }
 
-// ===== Email OTP + Save on same page =====
-const EMAIL_OTP_API=""; // ضع رابط الـ Worker هنا لإرسال الكود الحقيقي على الإيميل
+// ===== EmailJS OTP + Save on same page =====
+const EJS_PUBLIC_KEY="n-3RJqeFuNzD-KmW8";
+const EJS_SERVICE_ID="YOUR_SERVICE_ID";
+const EJS_TEMPLATE_ID="YOUR_TEMPLATE_ID";
+
+if(window.emailjs&&EJS_PUBLIC_KEY&&EJS_PUBLIC_KEY!=="YOUR_PUBLIC_KEY"){
+  try{emailjs.init({publicKey:EJS_PUBLIC_KEY})}catch(_){}
+}
+
 let mailOtpCode="",mailOtpExp=0,pendingMail="",mailVerifiedInSession=false;
 
 function updateMailVerifyBtnState(verified){
@@ -595,31 +603,29 @@ $("mailStartVerifyBtn").onclick=async()=>{
     $("mailOtpMsg").textContent="اكتب إيميل صحيح أولاً.";
     return;
   }
+  if(!window.emailjs||EJS_SERVICE_ID==="YOUR_SERVICE_ID"||EJS_TEMPLATE_ID==="YOUR_TEMPLATE_ID"){
+    $("mailOtpBox").style.display="block";
+    $("mailOtpMsg").textContent="لسا ناقص Service ID و Template ID في الكود.";
+    return;
+  }
   pendingMail=mail;
   mailOtpCode=Math.floor(100000+Math.random()*900000).toString();
   mailOtpExp=Date.now()+15*60*1000;
   $("mailOtpBox").style.display="block";
   $("mailOtpInput").value="";
-
-  if(!EMAIL_OTP_API){
-    $("mailOtpMsg").textContent="لإرسال كود حقيقي على الإيميل، اربط رابط EMAIL_OTP_API. الكود الحالي: "+mailOtpCode;
-    return;
-  }
-
   $("mailOtpMsg").textContent="جاري إرسال الكود إلى "+mail+"...";
+
+  const expTime=new Date(mailOtpExp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
   try{
-    const res=await fetch(EMAIL_OTP_API+"/send-email-otp",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({email:mail,code:mailOtpCode})
+    await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
+      to_email:mail,
+      email:mail,
+      passcode:mailOtpCode,
+      time:expTime
     });
-    if(!res.ok){
-      $("mailOtpMsg").textContent="تعذر إرسال الكود على الإيميل، تحقق من رابط الـ Worker.";
-      return;
-    }
     $("mailOtpMsg").textContent="تم إرسال الكود إلى "+mail+" — أدخله واضغط تأكيد.";
   }catch(_){
-    $("mailOtpMsg").textContent="تعذر الاتصال بخدمة إرسال الإيميل.";
+    $("mailOtpMsg").textContent="تعذر إرسال الكود، تحقق من Service ID و Template ID وإعدادات القالب.";
   }
 };
 
