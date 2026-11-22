@@ -196,18 +196,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 </div></div>
 <div class="shade" id="gShade"><div class="sheet" role="dialog" aria-modal="true">
   <h3 id="gTitle"></h3>
-  <label id="gContactL"></label>
+  <label id="gContactL" for="gMail"></label>
   <div id="contactFields">
-    <input id="gPhone" type="tel" inputmode="tel" autocomplete="tel">
-    <input id="gMail" type="email" inputmode="email" autocomplete="email" style="margin-top:8px">
-  </div>
-  <div id="otpVerifyBox" style="display:none;margin-top:10px">
-    <label for="otpCodeInput">أدخل الكود (6 أرقام)</label>
-    <div class="hrs">
-      <input id="otpCodeInput" type="text" inputmode="numeric" maxlength="6" placeholder="123456">
-      <button type="button" class="save" id="otpConfirmBtn" style="flex:0 0 auto;padding:0 16px;font-size:14px">تأكيد</button>
-    </div>
-    <div class="none" id="otpVerifyMsg" style="padding:6px 0 0;font-size:13px"></div>
+    <input id="gMail" type="email" inputmode="email" autocomplete="email">
   </div>
   <label id="gBackL" style="margin-top:16px"></label>
   <div class="share" style="margin-top:6px"><button id="gExport"></button><button id="gImport"></button></div>
@@ -221,6 +212,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   <div id="rDays" style="display:flex;gap:6px;justify-content:center;margin-bottom:12px"></div>
   <div class="share" style="grid-template-columns:1fr;margin-top:0"><button id="remAdd"></button></div>
   <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="pushBtn"></button></div>
+  <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="testNotifBtn">إرسال إشعار تجريبي الآن</button></div>
   <div class="none" id="pushStat" style="padding:6px 0 0;font-size:13px"></div>
   <div class="aboutT" id="homeT"></div>
   <p id="homeD" style="margin:0;color:var(--mute);font-size:13.5px;line-height:1.7"></p>
@@ -254,9 +246,9 @@ const I={
 ar:{title:"دفتر أيام العمل",days:"أيام عمل",hours:"ساعات",amount:"المبلغ",wageLbl:"أجرة اليوم:",wagePh:"اختياري",work:"عملت",off:"إجازة",abs:"غياب",notesH:"ملاحظات الشهر",wa:"إرسال بالواتساب",pdf:"تحميل PDF",hrsLbl:"عدد الساعات",noteLbl:"ملاحظة",notePh:"شو اشتغلت اليوم؟",save:"حفظ",del:"حذف",bName:"اسم القائمة (شخص أو شغلة)",bPh:"مثلاً: شغل مع أبو أحمد",langT:"اللغة",hr:"ساعة",empty:"اضغط على أي يوم لتسجّل فيه.",list:"قائمة",editList:"تعديل القائمة",newList:"قائمة جديدة",confirmDel:"تأكيد حذف القائمة وكل أيامها؟",day:"اليوم",status:"الحالة",hoursCol:"الساعات",noteCol:"ملاحظة",workDays:"أيام العمل",hoursTot:"الساعات",amountTot:"المبلغ",myBook:"دفتري",noRows:"ما في أيام مسجّلة بهالشهر",preparing:"عم بجهّز الـ PDF…",tapSend:"اضغط مرة ثانية للإرسال",noDl:"ما زبط التحميل هون",fail:"ما زبطت العملية",prev:"الشهر السابق",next:"الشهر التالي"},
 he:{title:"יומן ימי עבודה",days:"ימי עבודה",hours:"שעות",amount:"סכום",wageLbl:"שכר ליום:",wagePh:"אופציונלי",work:"עבדתי",off:"חופשה",abs:"היעדרות",notesH:"הערות החודש",wa:"שליחה בוואטסאפ",pdf:"הורדת PDF",hrsLbl:"מספר שעות",noteLbl:"הערה",notePh:"מה עבדת היום?",save:"שמירה",del:"מחיקה",bName:"שם הרשימה (אדם או עבודה)",bPh:"למשל: עבודה עם דני",langT:"שפה",hr:"שעות",empty:"לחצו על יום כדי לרשום בו.",list:"רשימה",editList:"עריכת רשימה",newList:"רשימה חדשה",confirmDel:"לאשר מחיקת הרשימה וכל הימים שלה?",day:"יום",status:"סטטוס",hoursCol:"שעות",noteCol:"הערה",workDays:"ימי עבודה",hoursTot:"שעות",amountTot:"סכום",myBook:"היומן שלי",noRows:"אין ימים רשומים בחודש הזה",preparing:"מכין PDF…",tapSend:"לחצו שוב לשליחה",noDl:"ההורדה לא זמינה כאן",fail:"הפעולה נכשלה",prev:"החודש הקודם",next:"החודש הבא"},
 en:{title:"Work Days Notebook",days:"Work days",hours:"Hours",amount:"Amount",wageLbl:"Daily wage:",wagePh:"Optional",work:"Worked",off:"Day off",abs:"Absent",notesH:"This month",wa:"Send on WhatsApp",pdf:"Download PDF",hrsLbl:"Hours worked",noteLbl:"Note",notePh:"What did you work on?",save:"Save",del:"Delete",bName:"List name (person or job)",bPh:"e.g. Work with Sam",langT:"Language",hr:"hrs",empty:"Tap any day to log it.",list:"List",editList:"Edit list",newList:"New list",confirmDel:"Delete this list and all its days?",day:"Day",status:"Status",hoursCol:"Hours",noteCol:"Note",workDays:"Work days",hoursTot:"Hours",amountTot:"Amount",myBook:"My notebook",noRows:"No days logged this month",preparing:"Preparing PDF…",tapSend:"Tap again to send",noDl:"Download isn’t available here",fail:"Something went wrong",prev:"Previous month",next:"Next month"}};
-Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"الرقم والإيميل",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",phonePh:"+972525257978",mailPh:"الإيميل",saved:"انحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطية",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
-Object.assign(I.he,{payD:"יומי",payM:"חודשי",wagePh:"שכר ליום",salaryPh:"משכורת חודשית",settings:"הגדרות",contactL:"מספר ואימייל",backL:"גיבוי",export:"שמירת גיבוי לקובץ",import:"שחזור מקובץ",cloudRestore:"שחזור מהחשבון",phonePh:"+972525257978",mailPh:"אימייל",saved:"נשמר",restored:"הנתונים שוחזרו מהגיבוי",cloudOn:"גיבוי אוטומטי פעיל בחשבון שלך",cloudOff:"גיבוי אוטומטי לא זמין כאן — השתמשו בגיבוי לקובץ",lastBk:"גיבוי אחרון:",noBk:"אין גיבוי שמור",badFile:"הקובץ לא תקין",confirmRestore:"לאשר החלפה?"});
-Object.assign(I.en,{payD:"Daily",payM:"Monthly",wagePh:"Daily wage",salaryPh:"Monthly salary",settings:"Settings",contactL:"Phone & Email",backL:"Backup",export:"Save backup file",import:"Restore from file",cloudRestore:"Restore from my account",phonePh:"+972525257978",mailPh:"Email",saved:"Saved",restored:"Your data was restored from backup",cloudOn:"Automatic backup is on for your account",cloudOff:"Automatic backup isn’t available here — use the backup file",lastBk:"Last backup:",noBk:"No backup saved",badFile:"That file isn’t valid",confirmRestore:"Tap again to replace"});
+Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"الإيميل",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",mailPh:"الإيميل",saved:"انحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطية",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
+Object.assign(I.he,{payD:"יומי",payM:"חודשי",wagePh:"שכר ליום",salaryPh:"משכורת חודשית",settings:"הגדרות",contactL:"אימייל",backL:"גיבוי",export:"שמירת גיבוי לקובץ",import:"שחזור מקובץ",cloudRestore:"שחזור מהחשבון",mailPh:"אימייל",saved:"נשמר",restored:"הנתונים שוחזרו מהגיבוי",cloudOn:"גיבוי אוטומטי פעיל בחשבון שלך",cloudOff:"גיבוי אוטומטי לא זמין כאן — השתמשו בגיבוי לקובץ",lastBk:"גיבוי אחרון:",noBk:"אין גיבוי שמור",badFile:"הקובץ לא תקין",confirmRestore:"לאשר החלפה?"});
+Object.assign(I.en,{payD:"Daily",payM:"Monthly",wagePh:"Daily wage",salaryPh:"Monthly salary",settings:"Settings",contactL:"Email",backL:"Backup",export:"Save backup file",import:"Restore from file",cloudRestore:"Restore from my account",mailPh:"Email",saved:"Saved",restored:"Your data was restored from backup",cloudOn:"Automatic backup is on for your account",cloudOff:"Automatic backup isn’t available here — use the backup file",lastBk:"Last backup:",noBk:"No backup saved",badFile:"That file isn’t valid",confirmRestore:"Tap again to replace"});
 Object.assign(I.ar,{aboutT:"حول وحقوق",author:"عبد أبو عرار",aboutD:"دفتر بسيط لتسجيل أيام عملك وساعاتك وأجرتك، وبتبعته PDF أو واتساب بضغطة.",siteL:"موقعي",ytL:"قناتي على يوتيوب",rights:"© 2026 Abd Code — جميع الحقوق محفوظة"});
 Object.assign(I.he,{aboutT:"אודות וזכויות",author:"עבד אבו ערער",aboutD:"יומן פשוט לרישום ימי העבודה, השעות והשכר שלך, ושליחה כ-PDF או בוואטסאפ בלחיצה.",siteL:"האתר שלי",ytL:"ערוץ היוטיוב שלי",rights:"© 2026 Abd Code — כל הזכויות שמורות"});
 Object.assign(I.en,{aboutT:"About & rights",author:"Abd Abu Arar",aboutD:"A simple notebook for your work days, hours and pay — send it as a PDF or on WhatsApp in one tap.",siteL:"My website",ytL:"My YouTube channel",rights:"© 2026 Abd Code — All rights reserved"});
@@ -269,9 +261,9 @@ Object.assign(I.en,{remT:"Daily reminder",remD:"Pick a time and days and we’ll
 Object.assign(I.ar,{nudge:"اليوم ما سجّلت يوم شغلك — اضغط لتسجّل"});
 Object.assign(I.he,{nudge:"היום עדיין לא רשמת — לחצו כדי לרשום"});
 Object.assign(I.en,{nudge:"You haven’t logged today — tap to log"});
-Object.assign(I.ar,{pushOn:"تفعيل إشعار التذكير الحقيقي",pushOff:"إيقاف إشعار التذكير",pushOk:"الإشعار شغّال ✓ — بيوصلك بس لما ما تسجّل اليوم",pushNeedHome:"على الآيفون: أضف التطبيق للشاشة الرئيسية أولاً وافتحه منها",pushDenied:"الإشعارات مرفوضة — فعّلها من إعدادات الجوال",pushNoApi:"التذكير الحقيقي مش جاهز بعد",pushFail:"ما زبط تفعيل الإشعار"});
-Object.assign(I.he,{pushOn:"הפעלת התראת תזכורת אמיתית",pushOff:"כיבוי התראת התזכורת",pushOk:"ההתראה פעילה ✓ — תישלח רק אם לא רשמת היום",pushNeedHome:"באייפון: הוסיפו קודם למסך הבית ופתחו משם",pushDenied:"ההתראות חסומות — הפעילו אותן בהגדרות הטלפון",pushNoApi:"התזכורת האמיתית עדיין לא מוכנה",pushFail:"ההפעלה נכשלה"});
-Object.assign(I.en,{pushOn:"Turn on real reminder notifications",pushOff:"Turn off reminder notifications",pushOk:"Notifications are on \u2713 \u2014 you only get one if you haven\u2019t logged today",pushNeedHome:"On iPhone: add the app to your Home Screen first, then open it from there",pushDenied:"Notifications are blocked \u2014 allow them in your phone settings",pushNoApi:"Real reminders aren\u2019t set up yet",pushFail:"Couldn\u2019t turn on notifications"});
+Object.assign(I.ar,{pushOn:"تفعيل إشعار التذكير",pushOff:"إيقاف إشعار التذكير",pushOk:"الإشعارات مفعّلة ✓ — سيتم تذكيرك في الوقت المحدد إذا لم تسجل اليوم",pushNeedHome:"على الآيفون: أضف التطبيق للشاشة الرئيسية أولاً وافتحه منها",pushDenied:"الإشعارات مرفوضة — فعّلها من إعدادات المتصفح أو الجوال",pushNoApi:"التذكير المحلي مفعّل ✓ (ولإشعارات الخلفية بدون فتح التطبيق أضف رابط الـ Worker)",pushFail:"ما زبط تفعيل الإشعار"});
+Object.assign(I.he,{pushOn:"הפעלת התראת תזכורת",pushOff:"כיבוי התראת התזכורת",pushOk:"ההתראות פעילות ✓ — תקבלו תזכורת בזמן שנבחר אם לא נרשמה עבודה היום",pushNeedHome:"באייפון: הוסיפו קודם למסך הבית ופתחו משם",pushDenied:"ההתראות חסומות — הפעילו אותן בהגדרות הדפדפן או הטלפון",pushNoApi:"התזכורת המקומית פעילה ✓",pushFail:"ההפעלה נכשלה"});
+Object.assign(I.en,{pushOn:"Turn on reminder notifications",pushOff:"Turn off reminder notifications",pushOk:"Notifications are on \u2713 \u2014 you get reminded at your chosen time if today isn’t logged",pushNeedHome:"On iPhone: add the app to your Home Screen first, then open it from there",pushDenied:"Notifications are blocked \u2014 allow them in your browser or phone settings",pushNoApi:"Local notifications are active \u2713",pushFail:"Couldn\u2019t turn on notifications"});
 const MO={ar:MONTHS,he:["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"],en:["January","February","March","April","May","June","July","August","September","October","November","December"]};
 const WDL={ar:WD,he:["א","ב","ג","ד","ה","ו","ש"],en:["S","M","T","W","T","F","S"]};
 const LK="workNotebook.lang";
@@ -288,7 +280,7 @@ if(!S||!S.books){
   try{od=JSON.parse(localStorage.getItem("workNotebook.v1")||"{}")||{};ow=localStorage.getItem("workNotebook.wage")||""}catch(e){}
   S={cur:"b0",books:{b0:{name:tr("myBook"),wage:ow,data:od}}};
 }
-if(!S.me)S.me={phone:"",email:""};
+if(!S.me)S.me={email:""};
 function load(){const b=S.books[S.cur];data=b.data;wage=b.wage||"";pay=b.pay||"d"}
 function persist(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}queueCloud();syncPush()}
 load();
@@ -494,7 +486,7 @@ function setLang(l){
   [[".sum span",["days","hours","amount"]],[".legend span",["work","off","abs"]],["#chips .chip",["work","off","abs"]]].forEach(([s,ks])=>document.querySelectorAll(s).forEach((e,i)=>{e.textContent=tr(ks[i])}));
   $("pay").children[0].textContent=tr("payD");$("pay").children[1].textContent=tr("payM");
   [["gTitle","settings"],["gContactL","contactL"],["gBackL","backL"],["gExport","export"],["gImport","import"],["gCloud","cloudRestore"],["gSave","save"]].forEach(([i,k])=>{$(i).textContent=tr(k)});
-  $("gPhone").placeholder=tr("phonePh");$("rNote").placeholder=tr("ratePh");$("gMail").placeholder=tr("mailPh");$("gear").setAttribute("aria-label",tr("settings"));
+  $("rNote").placeholder=tr("ratePh");$("gMail").placeholder=tr("mailPh");$("gear").setAttribute("aria-label",tr("settings"));
   $("wage").placeholder=tr("wagePh");$("note").placeholder=tr("notePh");$("bName").placeholder=tr("bPh");
   $("prev").textContent=RTL?"›":"‹";$("next").textContent=RTL?"‹":"›";
   $("prev").setAttribute("aria-label",tr("prev"));$("next").setAttribute("aria-label",tr("next"));
@@ -508,7 +500,7 @@ $("lShade").addEventListener("click",e=>{if(e.target===$("lShade"))$("lShade").c
 function amt(days){return pay==="m"?+wage:days*(+wage)}
 function mergeable(o){return !!(o&&o.books&&o.cur&&o.books[o.cur])}
 function emptyAll(){return Object.values(S.books).every(b=>!Object.keys(b.data||{}).length)}
-function applyState(o){S=o;if(!S.me)S.me={phone:"",email:""};load();$("wage").value=wage;persist();setLang(LANG)}
+function applyState(o){S=o;if(!S.me)S.me={email:""};load();$("wage").value=wage;persist();setLang(LANG)}
 function queueCloud(){
   if(!cloud)return;clearTimeout(cloudT);
   cloudT=setTimeout(async()=>{try{const at=Date.now();await cloud.set({json:JSON.stringify(S),at});lastBk=at}catch(e){}},1200);
@@ -518,94 +510,21 @@ function gStat(){
   $("gStat").textContent=cloud?(lastBk?tr("lastBk")+" "+new Date(lastBk).toLocaleString():tr("cloudOn")):tr("cloudOff");
 }
 
-const PHONE_OTP_API="https://restless-scene-680d.abdcode.workers.dev";
-let sentOtpCode="",sentOtpExp=0,pendingPhone="",pendingMail="";
-
-function normalizePhone(raw){
-  let p=(raw||"").replace(/[^\d+]/g,"").trim();
-  if(!p)return "";
-  if(p.startsWith("00"))p="+"+p.slice(2);
-  if(p.startsWith("+9720"))p="+972"+p.slice(5);
-  else if(p.startsWith("9720"))p="+972"+p.slice(4);
-  else if(p.startsWith("972"))p="+"+p;
-  else if(p.startsWith("0")&&p.length>=9)p="+972"+p.slice(1);
-  else if(!p.startsWith("+"))p="+"+p;
-  return p;
-}
-
 $("gear").onclick=()=>{
   renderRem();refreshPush();
   const me=S.me||{};
-  $("gPhone").value=me.phone||"";
   $("gMail").value=me.email||"";
   $("gCloud").dataset.c="";$("gCloud").textContent=tr("cloudRestore");gStat();
-  $("contactFields").style.display="block";
-  $("otpVerifyBox").style.display="none";
-  $("otpCodeInput").value="";
-  $("otpVerifyMsg").textContent="";
-  sentOtpCode="";pendingPhone="";pendingMail="";
   $("gShade").classList.add("on");
 };
 $("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))$("gShade").classList.remove("on")});
 
-$("gSave").onclick=async()=>{
-  const phone=normalizePhone($("gPhone").value.trim());
-  if(phone)$("gPhone").value=phone;
+$("gSave").onclick=()=>{
   const mail=$("gMail").value.trim();
-
-  if(!phone){
-    S.me={phone:"",email:mail};
-    persist();
-    toast(tr("saved"));
-    $("gShade").classList.remove("on");
-    return;
-  }
-
-  pendingPhone=phone;
-  pendingMail=mail;
-  sentOtpCode=Math.floor(100000+Math.random()*900000).toString();
-  sentOtpExp=Date.now()+15*60*1000;
-
-  $("contactFields").style.display="block";
-  $("otpVerifyBox").style.display="block";
-  $("otpCodeInput").value="";
-  $("otpVerifyMsg").textContent="جاري إرسال الكود إلى "+phone+"...";
-
-  try{
-    const res=await fetch(PHONE_OTP_API+"/send-sms",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({phone:phone,code:sentOtpCode})
-    });
-    const raw=await res.text();
-    let info=raw;
-    try{const j=JSON.parse(raw);info=j.error||j.message||raw}catch(_){}
-    if(!res.ok){
-      $("otpVerifyMsg").textContent="خطأ ("+res.status+"): "+(info||"تعذر إرسال الكود");
-      return;
-    }
-    $("otpVerifyMsg").textContent="تم إرسال الكود إلى "+phone+" — أدخل الكود واضغط تأكيد.";
-  }catch(err){
-    $("otpVerifyMsg").textContent="تعذر الاتصال بالرابط: "+(err&&err.message?err.message:"تحقق من الـ Worker و Twilio");
-  }
-};
-
-$("otpConfirmBtn").onclick=()=>{
-  const code=$("otpCodeInput").value.trim();
-  if(!sentOtpCode)return $("otpVerifyMsg").textContent="اضغط حفظ أولاً لإرسال الكود.";
-  if(Date.now()>sentOtpExp)return $("otpVerifyMsg").textContent="انتهت صلاحية الكود، اضغط حفظ لإرسال كود جديد.";
-  if(code===sentOtpCode){
-    const finalPhone=pendingPhone||normalizePhone($("gPhone").value.trim());
-    const finalMail=pendingMail||$("gMail").value.trim();
-    S.me={phone:finalPhone,email:finalMail};
-    persist();
-    sentOtpCode="";pendingPhone="";pendingMail="";
-    $("otpVerifyBox").style.display="none";
-    $("gShade").classList.remove("on");
-    toast("تم الحفظ وتأكيد الرقم");
-  }else{
-    $("otpVerifyMsg").textContent="الكود غير صحيح.";
-  }
+  S.me={email:mail};
+  persist();
+  toast(tr("saved"));
+  $("gShade").classList.remove("on");
 };
 
 $("gExport").onclick=async()=>{
@@ -644,8 +563,7 @@ setLang(LANG);
 })();
 
 // ===== Rating (first open) =====
-// Paste your Cloudflare Worker address here to receive ratings, e.g. "https://rate.yourname.workers.dev"
-const API="";   // ← ضع هنا رابط الـ Worker مثل: "https://notebook.yourname.workers.dev"
+const API="";
 const RATE_URL=API?API+"/rate":"";
 const RK="workNotebook.rated",RQ="workNotebook.rq";
 let stars=0;
@@ -681,16 +599,16 @@ showRate();flushRatings();
 $("nudge").onclick=()=>{const t=new Date();Y=t.getFullYear();M=t.getMonth();render();openSheet(key(Y,M,t.getDate()),t.getDate())};
 
 // ===== Daily reminder (calendar file) + home-screen icon =====
-const rem=()=>S.rem||(S.rem={time:"18:00",days:[0,1,2,3,4]});
+const rem=()=>S.rem||(S.rem={time:"18:00",days:[0,1,2,3,4],notifEnabled:false,lastNotif:""});
 function renderRem(){
-  const r=rem();$("rTime").value=r.time;
-  $("rDays").innerHTML=WD.map((w,i)=>'<button class="dayc'+(r.days.includes(i)?" on":"")+'" data-d="'+i+'">'+w+'</button>').join("");
+  const r=rem();$("rTime").value=r.time||"18:00";
+  $("rDays").innerHTML=WD.map((w,i)=>'<button class="dayc'+((r.days||[]).includes(i)?" on":"")+'" data-d="'+i+'">'+w+'</button>').join("");
   $("homeD").textContent=tr(/iPhone|iPad|iPod/.test(navigator.userAgent)?"homeIos":"homeAnd");
 }
-$("rDays").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;const r=rem(),d=+b.dataset.d;r.days=r.days.includes(d)?r.days.filter(x=>x!==d):r.days.concat(d);persist();b.classList.toggle("on")});
+$("rDays").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;const r=rem(),d=+b.dataset.d;r.days=(r.days||[]).includes(d)?r.days.filter(x=>x!==d):r.days.concat(d);persist();b.classList.toggle("on")});
 $("rTime").addEventListener("change",e=>{rem().time=e.target.value||"18:00";persist()});
 $("remAdd").onclick=async()=>{
-  const r=rem();if(!r.days.length)return toast(tr("pickDay"));
+  const r=rem();if(!r.days||!r.days.length)return toast(tr("pickDay"));
   const [hh,mm]=r.time.split(":").map(Number),p=n=>String(n).padStart(2,"0");
   const d=new Date();d.setSeconds(0,0);d.setHours(hh,mm);
   for(let i=0;i<8&&!(r.days.includes(d.getDay())&&d>new Date());i++){d.setDate(d.getDate()+1);d.setHours(hh,mm)}
@@ -704,46 +622,122 @@ $("remAdd").onclick=async()=>{
 
 render();
 
-// ===== Real push reminders (needs the Worker, see API above) =====
-const PUSH_OK="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+// ===== Notifications (Local reminder + optional Push Worker) =====
+const PUSH_OK="serviceWorker" in navigator&&"PushManager" in window;
+const NOTIF_OK="Notification" in window;
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
 const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 const b64uToArr=s=>{const b=(s+"=".repeat((4-s.length%4)%4)).replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(b),c=>c.charCodeAt(0))};
 function lastLogged(){let m="";Object.values(S.books).forEach(b=>Object.keys(b.data||{}).forEach(k=>{if(k>m)m=k}));return m}
 let pushT=null;
-async function getSub(){try{const r=await navigator.serviceWorker.getRegistration();return r?await r.pushManager.getSubscription():null}catch(e){return null}}
+
+async function showAppNotification(title,body){
+  if(!NOTIF_OK||Notification.permission!=="granted")return false;
+  try{
+    if("serviceWorker" in navigator){
+      const reg=await navigator.serviceWorker.getRegistration();
+      if(reg&&typeof reg.showNotification==="function"){
+        await reg.showNotification(title,{body,tag:"work-notebook-reminder"});
+        return true;
+      }
+    }
+  }catch(_){}
+  try{new Notification(title,{body,tag:"work-notebook-reminder"});return true}catch(_){return false}
+}
+
+async function getSub(){
+  if(!PUSH_OK)return null;
+  try{const r=await navigator.serviceWorker.getRegistration();return r?await r.pushManager.getSubscription():null}catch(e){return null}
+}
 async function doSync(){
+  if(!API)return;
   const sub=await getSub();if(!sub)return;const r=rem();
   try{caches.open("wn-meta").then(c=>c.put("lang",new Response(LANG)))}catch(e){}
   await fetch(API+"/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sub:sub.toJSON(),time:r.time,days:r.days,tz:Intl.DateTimeFormat().resolvedOptions().timeZone,lang:LANG,last:lastLogged()})});
 }
 function syncPush(){
-  if(!API||!PUSH_OK||Notification.permission!=="granted")return;
+  if(!API||!PUSH_OK||!NOTIF_OK||Notification.permission!=="granted")return;
   clearTimeout(pushT);pushT=setTimeout(()=>doSync().catch(()=>{}),1500);
 }
 async function refreshPush(){
-  const on=PUSH_OK&&Notification.permission==="granted"&&!!(await getSub());
-  $("pushBtn").textContent=tr(on?"pushOff":"pushOn");$("pushStat").textContent=on?tr("pushOk"):"";
+  const r=rem();
+  const isOn=!!(NOTIF_OK&&Notification.permission==="granted"&&r.notifEnabled);
+  $("pushBtn").textContent=tr(isOn?"pushOff":"pushOn");
+  if(!isOn){$("pushStat").textContent="";return}
+  $("pushStat").textContent=API?tr("pushOk"):tr("pushNoApi");
 }
 async function enablePush(){
-  if(!API)return toast(tr("pushNoApi"));
-  if(!PUSH_OK||(isIOS&&!standalone()))return toast(tr("pushNeedHome"));
+  if(!NOTIF_OK)return toast(tr("pushFail"));
+  if(isIOS&&!standalone())return toast(tr("pushNeedHome"));
   try{
-    const perm=await Notification.requestPermission();
+    const perm=Notification.permission==="granted"?"granted":await Notification.requestPermission();
     if(perm!=="granted")return toast(tr("pushDenied"));
-    await navigator.serviceWorker.register("sw.js");await navigator.serviceWorker.ready;
-    const reg=await navigator.serviceWorker.getRegistration();
-    let sub=await reg.pushManager.getSubscription();
-    if(!sub){const key=(await (await fetch(API+"/vapid")).text()).trim();sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64uToArr(key)})}
-    await doSync();refreshPush();toast(tr("pushOk"));
+    rem().notifEnabled=true;
+    persist();
+    if("serviceWorker" in navigator){
+      try{await navigator.serviceWorker.register("sw.js");await navigator.serviceWorker.ready}catch(_){}
+    }
+    if(API){
+      try{
+        const reg=await navigator.serviceWorker.getRegistration();
+        let sub=reg?await reg.pushManager.getSubscription():null;
+        if(!sub&&reg){
+          const key=(await (await fetch(API+"/vapid")).text()).trim();
+          sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64uToArr(key)});
+        }
+        await doSync();
+      }catch(_){}
+    }
+    refreshPush();
+    toast(tr("pushOk"));
   }catch(e){toast(tr("pushFail"))}
 }
 async function disablePush(){
-  try{const sub=await getSub();if(sub){const ep=sub.endpoint;await sub.unsubscribe();if(API)fetch(API+"/unsub",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({endpoint:ep})}).catch(()=>{})}}catch(e){}
+  rem().notifEnabled=false;
+  persist();
+  try{
+    const sub=await getSub();
+    if(sub){const ep=sub.endpoint;await sub.unsubscribe();if(API)fetch(API+"/unsub",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({endpoint:ep})}).catch(()=>{})}
+  }catch(_){}
   refreshPush();
 }
-$("pushBtn").onclick=async()=>{(PUSH_OK&&Notification.permission==="granted"&&await getSub())?disablePush():enablePush()};
+
+function checkLocalReminder(){
+  const r=rem();
+  if(!r.notifEnabled||!NOTIF_OK||Notification.permission!=="granted")return;
+  const nowD=new Date();
+  const dayIdx=nowD.getDay();
+  if(!(r.days||[]).includes(dayIdx))return;
+  const [hh,mm]=(r.time||"18:00").split(":").map(Number);
+  const nowMins=nowD.getHours()*60+nowD.getMinutes();
+  const targetMins=(hh||0)*60+(mm||0);
+  if(nowMins<targetMins)return;
+  const todayKey=key(nowD.getFullYear(),nowD.getMonth(),nowD.getDate());
+  if(r.lastNotif===todayKey)return;
+  const hasTodayEntry=Object.values(S.books).some(b=>b.data&&b.data[todayKey]);
+  if(hasTodayEntry)return;
+  r.lastNotif=todayKey;
+  persist();
+  showAppNotification(tr("title"),tr("remAsk"));
+}
+
+$("pushBtn").onclick=async()=>{
+  const r=rem();
+  (NOTIF_OK&&Notification.permission==="granted"&&r.notifEnabled)?disablePush():enablePush();
+};
+$("testNotifBtn").onclick=async()=>{
+  if(!NOTIF_OK)return toast(tr("pushFail"));
+  if(Notification.permission!=="granted"){
+    const perm=await Notification.requestPermission();
+    if(perm!=="granted")return toast(tr("pushDenied"));
+  }
+  const ok=await showAppNotification(tr("title"),tr("remAsk"));
+  toast(ok?"تم إرسال الإشعار التجريبي":tr("pushFail"));
+};
+
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+setInterval(checkLocalReminder,30000);
+checkLocalReminder();
 syncPush();
 </script>
 </body>
