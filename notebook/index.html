@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Work">
+<meta name="theme-color" content="#0f1722">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>دفتر أيام العمل</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@700;800&display=swap">
+<style>
+:root{
+  --bg:#f3efe6;--card:#fffdf8;--ink:#23211c;--mute:#7a7467;--line:#e2dccd;
+  --work:#2f7d5b;--off:#3b6ea5;--abs:#c2493d;--accent:#23211c;--accent-ink:#fffdf8;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17160f;--card:#211f17;--ink:#f1ece0;--mute:#a39c8a;--line:#343125;
+  --work:#4fb88a;--off:#6ea3dc;--abs:#e07366;--accent:#f1ece0;--accent-ink:#17160f;}}
+:root[data-theme="dark"]{
+  --bg:#17160f;--card:#211f17;--ink:#f1ece0;--mute:#a39c8a;--line:#343125;
+  --work:#4fb88a;--off:#6ea3dc;--abs:#e07366;--accent:#f1ece0;--accent-ink:#17160f;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;min-height:100vh}
+.app{max-width:480px;margin:0 auto;padding:16px 14px 40px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.top h1{font-size:22px;font-weight:800;margin:0}
+.nav{display:flex;align-items:center;gap:6px}
+.nav button,.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:12px;width:40px;height:40px;font-size:18px;font-family:inherit;cursor:pointer}
+.month{font-weight:700;min-width:104px;text-align:center;font-size:17px}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);background:var(--card);border-radius:16px;margin-bottom:14px}
+.sum div{padding:12px 6px;text-align:center}
+.sum div+div{border-inline-start:1px solid var(--line)}
+.sum b{display:block;font-size:24px;font-weight:800}
+.sum span{font-size:12.5px;color:var(--mute)}
+.wage{width:100%;margin:-4px 0 14px;display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mute)}
+.wage input{flex:1;max-width:130px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 10px;font:inherit;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.wd{text-align:center;font-size:12.5px;color:var(--mute);padding:4px 0}
+.day{aspect-ratio:1/1.05;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:16px;font-weight:500;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.day.empty{visibility:hidden}
+.day.today{outline:2px solid var(--accent);outline-offset:1px}
+.day.w{background:var(--work);border-color:var(--work);color:#fff}
+.day.o{background:var(--off);border-color:var(--off);color:#fff}
+.day.a{background:var(--abs);border-color:var(--abs);color:#fff}
+.day i{position:absolute;bottom:5px;width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.8}
+.legend{display:flex;gap:14px;justify-content:center;margin:12px 0 18px;font-size:13px;color:var(--mute)}
+.legend span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px;background:var(--c)}
+h2{font-size:16px;margin:0 0 8px}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start;cursor:pointer;text-align:start;font:inherit;color:inherit;width:100%}
+.row .dot{width:10px;height:10px;border-radius:50%;margin-top:7px;flex:none}
+.row .t{flex:1}
+.row .t small{color:var(--mute);display:block;font-size:13px}
+.row .t div{font-weight:700}
+.none{color:var(--mute);text-align:center;padding:18px 0;font-size:14.5px}
+.shade{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.shade.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}}
+.sheet h3{margin:0 0 12px;font-size:18px}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--ink);border-radius:12px;padding:11px 4px;font:inherit;font-weight:700;font-size:15px;cursor:pointer}
+.chip.sel[data-s="w"]{background:var(--work);border-color:var(--work);color:#fff}
+.chip.sel[data-s="o"]{background:var(--off);border-color:var(--off);color:#fff}
+.chip.sel[data-s="a"]{background:var(--abs);border-color:var(--abs);color:#fff}
+label{display:block;font-size:13.5px;color:var(--mute);margin:8px 0 4px}
+.sheet input,.sheet textarea{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:11px 12px;font:inherit;font-size:16px}
+.sheet textarea{min-height:84px;resize:vertical}
+.hrs{display:flex;gap:8px;align-items:center}
+.hrs button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:20px;cursor:pointer;flex:none}
+.hrs input{text-align:center}
+.acts{display:flex;gap:8px;margin-top:14px}
+.acts button{flex:1;padding:13px;border-radius:12px;border:0;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
+.save{background:var(--accent);color:var(--accent-ink)}
+.del{flex:0 0 auto!important;background:transparent;color:var(--abs);border:1px solid var(--line)!important}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--off);outline-offset:2px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.tab{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer}
+.tab.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tab.add{color:var(--mute);border-style:dashed}
+.share{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.share button{padding:13px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:800;font-size:15px;cursor:pointer}
+.share .wa{background:#1f9d55;border-color:#1f9d55;color:#fff}
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:40;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+.top{flex-wrap:wrap;row-gap:8px}
+.nav{order:3;flex-basis:100%;justify-content:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card);flex:none}
+.seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:13.5px;font-weight:700;padding:9px 13px;cursor:pointer}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.sheet{max-height:90vh;overflow-y:auto}
+.stars{display:flex;justify-content:center;gap:4px;margin:6px 0 12px}
+.stars button{background:none;border:0;font-size:40px;line-height:1;color:var(--line);cursor:pointer;padding:2px 4px}
+.stars button.on{color:#f5b301}
+.dayc{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}
+.dayc.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.nudge{display:block;width:100%;margin-bottom:12px;padding:12px 14px;border-radius:14px;border:1px solid var(--abs);background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:14.5px;text-align:start;cursor:pointer}
+.nudge[hidden]{display:none}
+.aboutT{font-weight:800;font-size:16px;margin:24px 0 10px}
+.about{padding:20px 14px 14px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(160deg,var(--bg),var(--card));text-align:center}
+.about .logo{width:56px;height:56px;margin:0 auto 10px;border-radius:16px;background:#0f1722;color:#5eead4;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(94,234,212,.3),0 8px 20px rgba(20,184,166,.2)}
+.brand{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:25px;letter-spacing:.3px;direction:ltr}
+.brand span{color:#14b8a6}
+.aname{font-weight:800;margin-top:2px;font-size:16px}
+.about p{margin:6px 0 14px;color:var(--mute);font-size:13.5px;line-height:1.7}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lk{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-weight:800;font-size:14px}
+.lk svg{flex:none}
+.lk.site svg{color:#14b8a6}
+.lk.yt svg{color:#ff0033}
+.rights{margin-top:14px;font-size:12px;color:var(--mute);direction:ltr}
+.top h1{flex:1;min-width:0;font-size:20px}
+.top .ghost{margin-inline-end:8px}
+.month{min-width:96px;font-size:16px}
+.chip.sel[data-l]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <h1 id="ttl">دفتر أيام العمل</h1>
+    <button class="ghost" id="lang" aria-label="Language">🌐</button>
+    <button class="ghost" id="gear" aria-label="Settings">⚙️</button>
+    <div class="nav">
+      <button id="prev">›</button>
+      <div class="month" id="mname"></div>
+      <button id="next">‹</button>
+    </div>
+  </div>
+
+  <button class="nudge" id="nudge" hidden></button>
+  <div class="tabs" id="tabs"></div>
+
+  <div class="sum">
+    <div><b id="sDays">0</b><span>أيام عمل</span></div>
+    <div><b id="sHrs">0</b><span>ساعات</span></div>
+    <div><b id="sPay">0</b><span>المبلغ</span></div>
+  </div>
+  <div class="wage"><div class="seg" id="pay"><button data-p="d"></button><button data-p="m"></button></div><input id="wage" type="number" inputmode="decimal" min="0" placeholder="اختياري"></div>
+
+  <div class="grid" id="wds"></div>
+  <div class="grid" id="grid" style="margin-top:5px"></div>
+  <div class="legend">
+    <span style="--c:var(--work)">عملت</span><span style="--c:var(--off)">إجازة</span><span style="--c:var(--abs)">غياب</span>
+  </div>
+
+  <h2>ملاحظات الشهر</h2>
+  <div class="list" id="list"></div>
+  <div class="share"><button class="wa" id="wa">إرسال بالواتساب</button><button id="pdf">تحميل PDF</button></div>
+</div>
+
+<div class="shade" id="shade">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h3 id="sTitle"></h3>
+    <div class="chips" id="chips">
+      <button class="chip" data-s="w">عملت</button>
+      <button class="chip" data-s="o">إجازة</button>
+      <button class="chip" data-s="a">غياب</button>
+    </div>
+    <div id="hrsBox">
+      <label for="hrs">عدد الساعات</label>
+      <div class="hrs">
+        <button id="hm" aria-label="أقل">−</button>
+        <input id="hrs" type="number" inputmode="decimal" min="0" max="24" step="0.5">
+        <button id="hp" aria-label="أكثر">+</button>
+      </div>
+    </div>
+    <label for="note">ملاحظة</label>
+    <textarea id="note" placeholder="شو اشتغلت اليوم؟"></textarea>
+    <div class="acts">
+      <button class="save" id="save">حفظ</button>
+      <button class="del" id="del">حذف</button>
+    </div>
+  </div>
+</div>
+
+<div class="shade" id="bShade"><div class="sheet" role="dialog" aria-modal="true">
+  <h3 id="bTitle"></h3>
+  <label for="bName">اسم القائمة (شخص أو شغلة)</label>
+  <input id="bName" maxlength="30" placeholder="مثلاً: شغل مع أبو أحمد">
+  <div class="acts"><button class="save" id="bSave">حفظ</button><button class="del" id="bDel">حذف</button></div>
+</div></div>
+<div class="shade" id="lShade"><div class="sheet" role="dialog" aria-modal="true">
+  <h3 id="lTitle"></h3>
+  <div class="chips" id="lChips">
+    <button class="chip" data-l="ar">العربية</button>
+    <button class="chip" data-l="he">עברית</button>
+    <button class="chip" data-l="en">English</button>
+  </div>
+</div></div>
+<div class="shade" id="gShade"><div class="sheet" role="dialog" aria-modal="true">
+  <h3 id="gTitle"></h3>
+  <label id="gContactL"></label>
+  <input id="gPhone" type="tel" inputmode="tel" autocomplete="tel">
+  <input id="gMail" type="email" inputmode="email" autocomplete="email" style="margin-top:8px">
+  <label id="gBackL" style="margin-top:16px"></label>
+  <div class="share" style="margin-top:6px"><button id="gExport"></button><button id="gImport"></button></div>
+  <input type="file" id="gFile" accept=".json,application/json" hidden>
+  <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="gCloud"></button></div>
+  <div class="none" id="gStat" style="padding:8px 0 0;font-size:13px"></div>
+  <div class="acts"><button class="save" id="gSave"></button></div>
+  <div class="aboutT" id="remT"></div>
+  <p id="remD" style="margin:0 0 10px;color:var(--mute);font-size:13.5px;line-height:1.6"></p>
+  <div class="hrs" style="margin-bottom:10px"><input id="rTime" type="time" style="text-align:center"></div>
+  <div id="rDays" style="display:flex;gap:6px;justify-content:center;margin-bottom:12px"></div>
+  <div class="share" style="grid-template-columns:1fr;margin-top:0"><button id="remAdd"></button></div>
+  <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="pushBtn"></button></div>
+  <div class="none" id="pushStat" style="padding:6px 0 0;font-size:13px"></div>
+  <div class="aboutT" id="homeT"></div>
+  <p id="homeD" style="margin:0;color:var(--mute);font-size:13.5px;line-height:1.7"></p>
+  <div class="aboutT" id="aTitle"></div>
+  <div class="about">
+    <div class="logo"><svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 14 8 24l10 10M30 14l10 10-10 10"/></svg></div>
+    <div class="brand">Abd<span>Code</span></div>
+    <div class="aname" id="aName"></div>
+    <p id="aDesc"></p>
+    <div class="links">
+      <a class="lk site" href="https://abdcode.pages.dev" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg><span id="lkSiteT"></span></a>
+      <a class="lk yt" href="https://www.youtube.com/@abdcode3" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9.2v5.6l5-2.8z" fill="#fff"/></svg><span id="lkYtT"></span></a>
+    </div>
+    <div class="rights" id="aRights"></div>
+  </div>
+</div></div>
+<div class="shade" id="rShade"><div class="sheet" role="dialog" aria-modal="true">
+  <h3 id="rTitle"></h3>
+  <p id="rDesc" style="margin:0 0 8px;color:var(--mute);font-size:14px"></p>
+  <div class="stars" id="stars" dir="ltr"><button data-r="1">★</button><button data-r="2">★</button><button data-r="3">★</button><button data-r="4">★</button><button data-r="5">★</button></div>
+  <textarea id="rNote" maxlength="500"></textarea>
+  <div class="acts"><button class="save" id="rSend"></button><button class="del" id="rLater" style="color:var(--mute)"></button></div>
+</div></div>
+<div id="toast"></div>
+<script>
+let MONTHS=["كانون الثاني","شباط","آذار","نيسان","أيار","حزيران","تموز","آب","أيلول","تشرين الأول","تشرين الثاني","كانون الأول"];
+let WD=["ح","ن","ث","ر","خ","ج","س"];
+let SN={w:"عملت",o:"إجازة",a:"غياب"};
+const SC={w:"var(--work)",o:"var(--off)",a:"var(--abs)"};
+const I={
+ar:{title:"دفتر أيام العمل",days:"أيام عمل",hours:"ساعات",amount:"المبلغ",wageLbl:"أجرة اليوم:",wagePh:"اختياري",work:"عملت",off:"إجازة",abs:"غياب",notesH:"ملاحظات الشهر",wa:"إرسال بالواتساب",pdf:"تحميل PDF",hrsLbl:"عدد الساعات",noteLbl:"ملاحظة",notePh:"شو اشتغلت اليوم؟",save:"حفظ",del:"حذف",bName:"اسم القائمة (شخص أو شغلة)",bPh:"مثلاً: شغل مع أبو أحمد",langT:"اللغة",hr:"ساعة",empty:"اضغط على أي يوم لتسجّل فيه.",list:"قائمة",editList:"تعديل القائمة",newList:"قائمة جديدة",confirmDel:"تأكيد حذف القائمة وكل أيامها؟",day:"اليوم",status:"الحالة",hoursCol:"الساعات",noteCol:"ملاحظة",workDays:"أيام العمل",hoursTot:"الساعات",amountTot:"المبلغ",myBook:"دفتري",noRows:"ما في أيام مسجّلة بهالشهر",preparing:"عم بجهّز الـ PDF…",tapSend:"اضغط مرة ثانية للإرسال",noDl:"ما زبط التحميل هون",fail:"ما زبطت العملية",prev:"الشهر السابق",next:"الشهر التالي"},
+he:{title:"יומן ימי עבודה",days:"ימי עבודה",hours:"שעות",amount:"סכום",wageLbl:"שכר ליום:",wagePh:"אופציונלי",work:"עבדתי",off:"חופשה",abs:"היעדרות",notesH:"הערות החודש",wa:"שליחה בוואטסאפ",pdf:"הורדת PDF",hrsLbl:"מספר שעות",noteLbl:"הערה",notePh:"מה עבדת היום?",save:"שמירה",del:"מחיקה",bName:"שם הרשימה (אדם או עבודה)",bPh:"למשל: עבודה עם דני",langT:"שפה",hr:"שעות",empty:"לחצו על יום כדי לרשום בו.",list:"רשימה",editList:"עריכת רשימה",newList:"רשימה חדשה",confirmDel:"לאשר מחיקת הרשימה וכל הימים שלה?",day:"יום",status:"סטטוס",hoursCol:"שעות",noteCol:"הערה",workDays:"ימי עבודה",hoursTot:"שעות",amountTot:"סכום",myBook:"היומן שלי",noRows:"אין ימים רשומים בחודש הזה",preparing:"מכין PDF…",tapSend:"לחצו שוב לשליחה",noDl:"ההורדה לא זמינה כאן",fail:"הפעולה נכשלה",prev:"החודש הקודם",next:"החודש הבא"},
+en:{title:"Work Days Notebook",days:"Work days",hours:"Hours",amount:"Amount",wageLbl:"Daily wage:",wagePh:"Optional",work:"Worked",off:"Day off",abs:"Absent",notesH:"This month",wa:"Send on WhatsApp",pdf:"Download PDF",hrsLbl:"Hours worked",noteLbl:"Note",notePh:"What did you work on?",save:"Save",del:"Delete",bName:"List name (person or job)",bPh:"e.g. Work with Sam",langT:"Language",hr:"hrs",empty:"Tap any day to log it.",list:"List",editList:"Edit list",newList:"New list",confirmDel:"Delete this list and all its days?",day:"Day",status:"Status",hoursCol:"Hours",noteCol:"Note",workDays:"Work days",hoursTot:"Hours",amountTot:"Amount",myBook:"My notebook",noRows:"No days logged this month",preparing:"Preparing PDF…",tapSend:"Tap again to send",noDl:"Download isn’t available here",fail:"Something went wrong",prev:"Previous month",next:"Next month"}};
+Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"بياناتك (اختياري) — بتنحفظ مع النسخة الاحتياطية",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",phonePh:"رقم الهاتف",mailPh:"الإيميل",saved:"انحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطية",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
+Object.assign(I.he,{payD:"יומי",payM:"חודשי",wagePh:"שכר ליום",salaryPh:"משכורת חודשית",settings:"הגדרות",contactL:"הפרטים שלך (אופציונלי) — נשמרים עם הגיבוי",backL:"גיבוי",export:"שמירת גיבוי לקובץ",import:"שחזור מקובץ",cloudRestore:"שחזור מהחשבון",phonePh:"מספר טלפון",mailPh:"אימייל",saved:"נשמר",restored:"הנתונים שוחזרו מהגיבוי",cloudOn:"גיבוי אוטומטי פעיל בחשבון שלך",cloudOff:"גיבוי אוטומטי לא זמין כאן — השתמשו בגיבוי לקובץ",lastBk:"גיבוי אחרון:",noBk:"אין גיבוי שמור",badFile:"הקובץ לא תקין",confirmRestore:"לאשר החלפה?"});
+Object.assign(I.en,{payD:"Daily",payM:"Monthly",wagePh:"Daily wage",salaryPh:"Monthly salary",settings:"Settings",contactL:"Your details (optional) — saved with your backup",backL:"Backup",export:"Save backup file",import:"Restore from file",cloudRestore:"Restore from my account",phonePh:"Phone number",mailPh:"Email",saved:"Saved",restored:"Your data was restored from backup",cloudOn:"Automatic backup is on for your account",cloudOff:"Automatic backup isn’t available here — use the backup file",lastBk:"Last backup:",noBk:"No backup saved",badFile:"That file isn’t valid",confirmRestore:"Tap again to replace"});
+Object.assign(I.ar,{aboutT:"حول وحقوق",author:"عبد أبو عرار",aboutD:"دفتر بسيط لتسجيل أيام عملك وساعاتك وأجرتك، وبتبعته PDF أو واتساب بضغطة.",siteL:"موقعي",ytL:"قناتي على يوتيوب",rights:"© 2026 Abd Code — جميع الحقوق محفوظة"});
+Object.assign(I.he,{aboutT:"אודות וזכויות",author:"עבד אבו ערער",aboutD:"יומן פשוט לרישום ימי העבודה, השעות והשכר שלך, ושליחה כ-PDF או בוואטסאפ בלחיצה.",siteL:"האתר שלי",ytL:"ערוץ היוטיוב שלי",rights:"© 2026 Abd Code — כל הזכויות שמורות"});
+Object.assign(I.en,{aboutT:"About & rights",author:"Abd Abu Arar",aboutD:"A simple notebook for your work days, hours and pay — send it as a PDF or on WhatsApp in one tap.",siteL:"My website",ytL:"My YouTube channel",rights:"© 2026 Abd Code — All rights reserved"});
+Object.assign(I.ar,{rateT:"كيف ولا الدفتر؟",rateD:"قيّمه بالنجوم واكتب رأيك، بيساعدني أحسّنه.",ratePh:"اكتب تعليقك (اختياري)",rateSend:"إرسال",rateLater:"مش هلأ",pickStars:"اختار عدد النجوم",thanks:"شكراً إلك!"});
+Object.assign(I.he,{rateT:"איך היומן?",rateD:"דרגו בכוכבים וכתבו את דעתכם, זה עוזר לי לשפר.",ratePh:"כתבו תגובה (אופציונלי)",rateSend:"שליחה",rateLater:"לא עכשיו",pickStars:"בחרו מספר כוכבים",thanks:"תודה!"});
+Object.assign(I.en,{rateT:"How do you like it?",rateD:"Rate it and leave a comment — it helps me improve it.",ratePh:"Your comment (optional)",rateSend:"Send",rateLater:"Not now",pickStars:"Pick a star rating",thanks:"Thank you!"});
+Object.assign(I.ar,{remT:"تذكير يومي",remD:"اختار الوقت والأيام وبنضيفه لتقويم جوالك، فبيذكّرك حتى لو البرنامج مسكّر.",remAdd:"إضافة التذكير للتقويم",remAsk:"سجّلت يوم شغلك؟",remDone:"جاهز — افتح الملف وأضفه للتقويم",pickDay:"اختار يوم واحد على الأقل",homeT:"أضفه على الشاشة الرئيسية",homeIos:"افتح الرابط بـ Safari، اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية».",homeAnd:"افتح الرابط بـ Chrome، اضغط ⋮ ثم «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»."});
+Object.assign(I.he,{remT:"תזכורת יומית",remD:"בחרו שעה וימים ונוסיף ליומן הטלפון, כך שתקבלו תזכורת גם כשהאפליקציה סגורה.",remAdd:"הוספת התזכורת ליומן",remAsk:"רשמת את יום העבודה?",remDone:"מוכן — פתחו את הקובץ והוסיפו ליומן",pickDay:"בחרו לפחות יום אחד",homeT:"הוספה למסך הבית",homeIos:"פתחו את הקישור ב-Safari, לחצו על כפתור השיתוף ואז «הוסף למסך הבית».",homeAnd:"פתחו את הקישור ב-Chrome, לחצו ⋮ ואז «התקן אפליקציה» או «הוסף למסך הבית»."});
+Object.assign(I.en,{remT:"Daily reminder",remD:"Pick a time and days and we’ll add it to your phone calendar, so it reminds you even when the app is closed.",remAdd:"Add reminder to calendar",remAsk:"Did you log today’s work?",remDone:"Ready — open the file and add it to your calendar",pickDay:"Pick at least one day",homeT:"Add to home screen",homeIos:"Open the link in Safari, tap Share, then “Add to Home Screen”.",homeAnd:"Open the link in Chrome, tap ⋮, then “Install app” or “Add to Home screen”."});
+Object.assign(I.ar,{nudge:"اليوم ما سجّلت يوم شغلك — اضغط لتسجّل"});
+Object.assign(I.he,{nudge:"היום עדיין לא רשמת — לחצו כדי לרשום"});
+Object.assign(I.en,{nudge:"You haven’t logged today — tap to log"});
+Object.assign(I.ar,{pushOn:"تفعيل إشعار التذكير الحقيقي",pushOff:"إيقاف إشعار التذكير",pushOk:"الإشعار شغّال ✓ — بيوصلك بس لما ما تسجّل اليوم",pushNeedHome:"على الآيفون: أضف التطبيق للشاشة الرئيسية أولاً وافتحه منها",pushDenied:"الإشعارات مرفوضة — فعّلها من إعدادات الجوال",pushNoApi:"التذكير الحقيقي مش جاهز بعد",pushFail:"ما زبط تفعيل الإشعار"});
+Object.assign(I.he,{pushOn:"הפעלת התראת תזכורת אמיתית",pushOff:"כיבוי התראת התזכורת",pushOk:"ההתראה פעילה ✓ — תישלח רק אם לא רשמת היום",pushNeedHome:"באייפון: הוסיפו קודם למסך הבית ופתחו משם",pushDenied:"ההתראות חסומות — הפעילו אותן בהגדרות הטלפון",pushNoApi:"התזכורת האמיתית עדיין לא מוכנה",pushFail:"ההפעלה נכשלה"});
+Object.assign(I.en,{pushOn:"Turn on real reminder notifications",pushOff:"Turn off reminder notifications",pushOk:"Notifications are on \u2713 \u2014 you only get one if you haven\u2019t logged today",pushNeedHome:"On iPhone: add the app to your Home Screen first, then open it from there",pushDenied:"Notifications are blocked \u2014 allow them in your phone settings",pushNoApi:"Real reminders aren\u2019t set up yet",pushFail:"Couldn\u2019t turn on notifications"});
+const MO={ar:MONTHS,he:["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"],en:["January","February","March","April","May","June","July","August","September","October","November","December"]};
+const WDL={ar:WD,he:["א","ב","ג","ד","ה","ו","ש"],en:["S","M","T","W","T","F","S"]};
+const LK="workNotebook.lang";
+let LANG="en",RTL=false,ready=null,cloud=null,cloudT=null,lastBk=null;
+(function(){let l=null;try{l=localStorage.getItem(LK)}catch(e){}
+  if(!I[l]){const n=((navigator.languages&&navigator.languages[0])||navigator.language||"en").toLowerCase();l=n.startsWith("ar")?"ar":(n.startsWith("he")||n.startsWith("iw"))?"he":"en"}
+  LANG=l;RTL=l!=="en"})();
+const tr=k=>(I[LANG]&&I[LANG][k])||I.en[k]||k;
+const K="workNotebook.v2";
+let S=null,data={},wage="",pay="d";
+try{S=JSON.parse(localStorage.getItem(K)||"null")}catch(e){}
+if(!S||!S.books){
+  let od={},ow="";
+  try{od=JSON.parse(localStorage.getItem("workNotebook.v1")||"{}")||{};ow=localStorage.getItem("workNotebook.wage")||""}catch(e){}
+  S={cur:"b0",books:{b0:{name:tr("myBook"),wage:ow,data:od}}};
+}
+function load(){const b=S.books[S.cur];data=b.data;wage=b.wage||"";pay=b.pay||"d"}
+function persist(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}queueCloud();syncPush()}
+load();
+const $=id=>document.getElementById(id);
+const now=new Date();let Y=now.getFullYear(),M=now.getMonth();
+const key=(y,m,d)=>y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+const fmt=n=>(Math.round(n*100)/100).toString();
+
+$("wds").innerHTML=WD.map(w=>'<div class="wd">'+w+'</div>').join("");
+$("wage").value=wage;
+$("wage").addEventListener("input",e=>{wage=e.target.value;S.books[S.cur].wage=wage;persist();render()});
+
+function render(){
+  $("mname").textContent=MONTHS[M]+" "+Y;
+  renderTabs();
+  const first=new Date(Y,M,1).getDay(),n=new Date(Y,M+1,0).getDate();
+  let h="";
+  for(let i=0;i<first;i++)h+='<div class="day empty"></div>';
+  let days=0,hrs=0;const items=[];
+  for(let d=1;d<=n;d++){
+    const k=key(Y,M,d),e=data[k];
+    const isT=d===now.getDate()&&M===now.getMonth()&&Y===now.getFullYear();
+    if(e){
+      if(e.s==="w"){days++;hrs+=+e.h||0}
+      items.push([d,k,e]);
+    }
+    h+='<button class="day'+(e?" "+e.s:"")+(isT?" today":"")+'" data-k="'+k+'" data-d="'+d+'">'+d+(e&&e.n?"<i></i>":"")+'</button>';
+  }
+  $("grid").innerHTML=h;
+  $("sDays").textContent=days;$("sHrs").textContent=fmt(hrs);
+  $("sPay").textContent=wage?fmt(amt(days)):"—";
+  const withNote=items.filter(x=>x[2].n||x[2].s==="w").reverse();
+  $("list").innerHTML=withNote.length?withNote.map(([d,k,e])=>
+    '<button class="row" data-k="'+k+'" data-d="'+d+'"><span class="dot" style="background:'+SC[e.s]+'"></span><span class="t"><div>'+d+" "+MONTHS[M]+" · "+SN[e.s]+(e.s==="w"&&e.h?" · "+e.h+" "+tr("hr"):"")+'</div>'+(e.n?'<small>'+esc(e.n)+'</small>':"")+'</span></button>'
+  ).join(""):'<div class="none">'+tr("empty")+'</div>';
+}
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+let cur=null,curS="w";
+function openSheet(k,d){
+  cur=k;const e=data[k]||{};
+  curS=e.s||"w";
+  $("sTitle").textContent=d+" "+MONTHS[M]+" "+Y;
+  $("hrs").value=e.h!=null?e.h:8;
+  $("note").value=e.n||"";
+  $("del").style.display=data[k]?"":"none";
+  paint();$("shade").classList.add("on");
+}
+function paint(){
+  document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("sel",c.dataset.s===curS));
+  $("hrsBox").style.display=curS==="w"?"":"none";
+}
+function close(){$("shade").classList.remove("on");cur=null}
+$("chips").addEventListener("click",e=>{const c=e.target.closest(".chip");if(c){curS=c.dataset.s;paint()}});
+$("hm").onclick=()=>{$("hrs").value=Math.max(0,(+$("hrs").value||0)-0.5)};
+$("hp").onclick=()=>{$("hrs").value=Math.min(24,(+$("hrs").value||0)+0.5)};
+$("save").onclick=()=>{
+  data[cur]={s:curS,h:curS==="w"?(+$("hrs").value||0):0,n:$("note").value.trim()};
+  persist();close();render();
+};
+$("del").onclick=()=>{delete data[cur];persist();close();render()};
+$("shade").addEventListener("click",e=>{if(e.target===$("shade"))close()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(b)openSheet(b.dataset.k,b.dataset.d)});
+$("prev").onclick=()=>{M--;if(M<0){M=11;Y--}render()};
+$("next").onclick=()=>{M++;if(M>11){M=0;Y++}render()};
+
+function toast(t){const el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("on"),2600)}
+function renderTabs(){
+  ready=null;$("wa").textContent=tr("wa");
+  {const t=new Date(),nk=key(t.getFullYear(),t.getMonth(),t.getDate());$("nudge").hidden=!!data[nk];$("nudge").textContent="📒 "+tr("nudge")}
+  document.querySelectorAll("#pay button").forEach(b=>b.classList.toggle("on",b.dataset.p===pay));
+  $("wage").placeholder=tr(pay==="m"?"salaryPh":"wagePh");
+  $("tabs").innerHTML=Object.keys(S.books).map(id=>'<button class="tab'+(id===S.cur?' on':'')+'" data-b="'+id+'">'+esc(S.books[id].name)+(id===S.cur?' ✎':'')+'</button>').join("")+'<button class="tab add" data-b="+">＋ '+tr("list")+'</button>';
+}
+let editB=null;
+function openBook(id){
+  editB=id;$("bTitle").textContent=id?tr("editList"):tr("newList");
+  $("bName").value=id?S.books[id].name:"";
+  $("bDel").dataset.c="";$("bDel").textContent=tr("del");
+  $("bDel").style.display=id&&Object.keys(S.books).length>1?"":"none";
+  $("bShade").classList.add("on");setTimeout(()=>$("bName").focus(),60);
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-b]");if(!t)return;
+  const id=t.dataset.b;
+  if(id==="+")openBook(null);
+  else if(id===S.cur)openBook(id);
+  else{S.cur=id;load();$("wage").value=wage;persist();render()}
+});
+$("bSave").onclick=()=>{
+  const n=$("bName").value.trim();if(!n)return;
+  if(editB)S.books[editB].name=n;
+  else{const id="b"+Date.now();S.books[id]={name:n,wage:"",data:{}};S.cur=id;load();$("wage").value=""}
+  persist();$("bShade").classList.remove("on");render();
+};
+$("bDel").onclick=()=>{
+  if(!$("bDel").dataset.c){$("bDel").dataset.c="1";$("bDel").textContent=tr("confirmDel");return}
+  delete S.books[editB];
+  if(S.cur===editB){S.cur=Object.keys(S.books)[0];load();$("wage").value=wage}
+  persist();$("bShade").classList.remove("on");render();
+};
+$("bShade").addEventListener("click",e=>{if(e.target===$("bShade"))$("bShade").classList.remove("on")});
+
+function monthRows(){const n=new Date(Y,M+1,0).getDate(),r=[];for(let d=1;d<=n;d++){const e=data[key(Y,M,d)];if(e)r.push([d,e])}return r}
+function totals(){let days=0,hrs=0;monthRows().forEach(([d,e])=>{if(e.s==="w"){days++;hrs+=+e.h||0}});return{days,hrs}}
+function reportText(){
+  const T=totals();let t="📒 "+S.books[S.cur].name+" — "+MONTHS[M]+" "+Y+"\n\n";
+  monthRows().forEach(([d,e])=>{t+=d+"/"+(M+1)+" "+SN[e.s]+(e.s==="w"&&e.h?" "+e.h+" "+tr("hr"):"")+(e.n?" - "+e.n:"")+"\n"});
+  t+="\n"+tr("workDays")+": "+T.days+"\n"+tr("hoursTot")+": "+fmt(T.hrs);
+  if(wage)t+="\n"+tr("amountTot")+": "+fmt(amt(T.days));
+  return t;
+}
+async function getPDF(){
+  const sig=S.cur+"|"+Y+"|"+M+"|"+LANG+"|"+wage+pay+"|"+JSON.stringify(monthRows());
+  if(!ready||ready.sig!==sig)ready={sig,blob:await makePDF(),name:S.books[S.cur].name+" "+(M+1)+"-"+Y+".pdf"};
+  return ready;
+}
+async function saveFile(r){
+  let dl=null;try{dl=window.claude?await claude.use("downloads"):null}catch(e){}
+  if(!dl){try{const a=document.createElement("a");a.href=URL.createObjectURL(r.blob);a.download=r.name;document.body.appendChild(a);a.click();a.remove();return true}catch(e){return false}}
+  try{await dl.save({filename:r.name,data:r.blob});return true}catch(e){return !!(e&&e.code==="declined")}
+}
+$("wa").onclick=async()=>{
+  if(!monthRows().length)return toast(tr("noRows"));
+  const first=!ready;
+  toast(tr("preparing"));
+  let r;try{r=await getPDF()}catch(e){return toast(tr("fail"))}
+  const file=new File([r.blob],r.name,{type:"application/pdf"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:r.name});return}
+    catch(e){
+      if(e&&e.name==="AbortError")return;
+      if(e&&e.name==="NotAllowedError"&&first){$("wa").textContent=tr("tapSend");return}
+    }
+  }
+  if(await saveFile(r))return;
+  const tx=reportText();
+  if(!window.open("https://wa.me/?text="+encodeURIComponent(tx),"_blank")){try{await navigator.clipboard.writeText(tx)}catch(e){}toast(tr("fail"))}
+};
+
+function buildPDF(jp){
+  const enc=new TextEncoder(),parts=[],off=[];let len=0;
+  const add=x=>{const u=typeof x==="string"?enc.encode(x):x;parts.push(u);len+=u.length};
+  const n=2+jp.length*3;
+  add("%PDF-1.4\n");
+  off[1]=len;add("1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n");
+  off[2]=len;add("2 0 obj<</Type/Pages/Count "+jp.length+"/Kids["+jp.map((_,i)=>(3+3*i)+" 0 R").join(" ")+"]>>endobj\n");
+  jp.forEach((j,i)=>{
+    const p=3+3*i,c=p+1,m=p+2,cs="q 595 0 0 842 0 0 cm /Im0 Do Q";
+    off[p]=len;add(p+" 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</XObject<</Im0 "+m+" 0 R>>>>/Contents "+c+" 0 R>>endobj\n");
+    off[c]=len;add(c+" 0 obj<</Length "+cs.length+">>stream\n"+cs+"\nendstream endobj\n");
+    off[m]=len;add(m+" 0 obj<</Type/XObject/Subtype/Image/Width "+j.w+"/Height "+j.h+"/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length "+j.b.length+">>stream\n");add(j.b);add("\nendstream endobj\n");
+  });
+  const x=len;let t="xref\n0 "+(n+1)+"\n0000000000 65535 f \n";
+  for(let i=1;i<=n;i++)t+=String(off[i]).padStart(10,"0")+" 00000 n \n";
+  add(t+"trailer<</Size "+(n+1)+"/Root 1 0 R>>\nstartxref\n"+x+"\n%%EOF");
+  return new Blob(parts,{type:"application/pdf"});
+}
+async function makePDF(){
+  const rows=monthRows(),b=S.books[S.cur],T=totals();
+  const F='Tajawal,Tahoma,"Segoe UI",Arial,sans-serif';
+  try{await document.fonts.load('800 40px Tajawal');await document.fonts.load('500 30px Tajawal')}catch(e){}
+  const W=1240,H=1754,PER=22,pages=Math.max(1,Math.ceil(rows.length/PER)),jp=[];
+  for(let p=0;p<pages;p++){
+    const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+    g.fillStyle="#fff";g.fillRect(0,0,W,H);g.direction=RTL?"rtl":"ltr";g.textAlign=RTL?"right":"left";
+    g.fillStyle="#23211c";g.font="800 58px "+F;g.fillText(b.name,RTL?W-90:90,150);
+    g.fillStyle="#7a7467";g.font="500 36px "+F;g.fillText(MONTHS[M]+" "+Y,RTL?W-90:90,208);
+    const X=RTL?[W-90,W-340,W-500,W-640]:[90,340,500,640];
+    g.fillStyle="#7a7467";g.font="700 30px "+F;
+    [tr("day"),tr("status"),tr("hoursCol"),tr("noteCol")].forEach((h,i)=>g.fillText(h,X[i],300));
+    g.fillStyle="#23211c";g.fillRect(90,322,W-180,3);
+    rows.slice(p*PER,(p+1)*PER).forEach(([d,e],i)=>{
+      const y=385+i*56;
+      g.fillStyle="#23211c";g.font="500 32px "+F;g.fillText(d+" "+MONTHS[M],X[0],y);
+      g.fillStyle={w:"#2f7d5b",o:"#3b6ea5",a:"#c2493d"}[e.s];g.font="700 32px "+F;g.fillText(SN[e.s],X[1],y);
+      g.fillStyle="#23211c";g.font="500 32px "+F;g.fillText(e.s==="w"?String(e.h||0):"—",X[2],y);
+      g.fillText((e.n||"").slice(0,60),X[3],y,560);
+      g.fillStyle="#e2dccd";g.fillRect(90,y+16,W-180,2);
+    });
+    if(p===pages-1){
+      g.fillStyle="#23211c";g.font="800 38px "+F;
+      g.fillText(tr("workDays")+": "+T.days+"     "+tr("hoursTot")+": "+fmt(T.hrs)+(wage?"     "+tr("amountTot")+": "+fmt(amt(T.days)):""),RTL?W-90:90,1670);
+    }
+    if(pages>1){g.textAlign=RTL?"left":"right";g.fillStyle="#7a7467";g.font="500 28px "+F;g.fillText((p+1)+" / "+pages,RTL?90:W-90,1700)}
+    const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",0.92));
+    jp.push({b:new Uint8Array(await blob.arrayBuffer()),w:W,h:H});
+  }
+  return buildPDF(jp);
+}
+$("pdf").onclick=async()=>{
+  if(!monthRows().length)return toast(tr("noRows"));
+  try{const r=await getPDF();if(!(await saveFile(r)))toast(tr("noDl"))}catch(e){toast(tr("fail"))}
+};
+
+function setLang(l){
+  LANG=l;RTL=l!=="en";try{localStorage.setItem(LK,l)}catch(e){}
+  MONTHS=MO[l];WD=WDL[l];SN={w:tr("work"),o:tr("off"),a:tr("abs")};
+  const h=document.documentElement;h.lang=l;h.dir=RTL?"rtl":"ltr";
+  document.title=tr("title");try{caches.open("wn-meta").then(c=>c.put("lang",new Response(l)))}catch(e){}
+  [["#ttl","title"],["h2","notesH"],["label[for=hrs]","hrsLbl"],["label[for=note]","noteLbl"],["#save","save"],["#del","del"],["label[for=bName]","bName"],["#bSave","save"],["#lTitle","langT"],["#aTitle","aboutT"],["#aName","author"],["#aDesc","aboutD"],["#lkSiteT","siteL"],["#lkYtT","ytL"],["#aRights","rights"],["#rTitle","rateT"],["#rDesc","rateD"],["#rSend","rateSend"],["#rLater","rateLater"],["#remT","remT"],["#remD","remD"],["#remAdd","remAdd"],["#homeT","homeT"]].forEach(([s,k])=>{document.querySelector(s).textContent=tr(k)});
+  [[".sum span",["days","hours","amount"]],[".legend span",["work","off","abs"]],["#chips .chip",["work","off","abs"]]].forEach(([s,ks])=>document.querySelectorAll(s).forEach((e,i)=>{e.textContent=tr(ks[i])}));
+  $("pay").children[0].textContent=tr("payD");$("pay").children[1].textContent=tr("payM");
+  [["gTitle","settings"],["gContactL","contactL"],["gBackL","backL"],["gExport","export"],["gImport","import"],["gCloud","cloudRestore"],["gSave","save"]].forEach(([i,k])=>{$(i).textContent=tr(k)});
+  $("gPhone").placeholder=tr("phonePh");$("rNote").placeholder=tr("ratePh");$("gMail").placeholder=tr("mailPh");$("gear").setAttribute("aria-label",tr("settings"));
+  $("wage").placeholder=tr("wagePh");$("note").placeholder=tr("notePh");$("bName").placeholder=tr("bPh");
+  $("prev").textContent=RTL?"›":"‹";$("next").textContent=RTL?"‹":"›";
+  $("prev").setAttribute("aria-label",tr("prev"));$("next").setAttribute("aria-label",tr("next"));
+  $("wds").innerHTML=WD.map(w=>'<div class="wd">'+w+'</div>').join("");
+  document.querySelectorAll("#lChips .chip").forEach(c=>c.classList.toggle("sel",c.dataset.l===l));
+  render();
+}
+$("lang").onclick=()=>$("lShade").classList.add("on");
+$("lChips").addEventListener("click",e=>{const c=e.target.closest("[data-l]");if(c){setLang(c.dataset.l);$("lShade").classList.remove("on")}});
+$("lShade").addEventListener("click",e=>{if(e.target===$("lShade"))$("lShade").classList.remove("on")});
+function amt(days){return pay==="m"?+wage:days*(+wage)}
+function mergeable(o){return !!(o&&o.books&&o.cur&&o.books[o.cur])}
+function emptyAll(){return Object.values(S.books).every(b=>!Object.keys(b.data||{}).length)}
+function applyState(o){S=o;load();$("wage").value=wage;persist();setLang(LANG)}
+function queueCloud(){
+  if(!cloud)return;clearTimeout(cloudT);
+  cloudT=setTimeout(async()=>{try{const at=Date.now();await cloud.set({json:JSON.stringify(S),at});lastBk=at}catch(e){}},1200);
+}
+$("pay").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(b){pay=b.dataset.p;S.books[S.cur].pay=pay;persist();render()}});
+function gStat(){
+  $("gStat").textContent=cloud?(lastBk?tr("lastBk")+" "+new Date(lastBk).toLocaleString():tr("cloudOn")):tr("cloudOff");
+}
+$("gear").onclick=()=>{
+  renderRem();refreshPush();
+  const me=S.me||{};$("gPhone").value=me.phone||"";$("gMail").value=me.email||"";
+  $("gCloud").dataset.c="";$("gCloud").textContent=tr("cloudRestore");gStat();
+  $("gShade").classList.add("on");
+};
+$("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))$("gShade").classList.remove("on")});
+$("gSave").onclick=()=>{S.me={phone:$("gPhone").value.trim(),email:$("gMail").value.trim()};persist();$("gShade").classList.remove("on");toast(tr("saved"))};
+$("gExport").onclick=async()=>{
+  const ok=await saveFile({name:"work-notebook-backup.json",blob:new Blob([JSON.stringify(S)],{type:"application/json"})});
+  if(!ok)toast(tr("noDl"));
+};
+$("gImport").onclick=()=>$("gFile").click();
+$("gFile").addEventListener("change",async e=>{
+  const f=e.target.files[0];e.target.value="";if(!f)return;
+  try{const o=JSON.parse(await f.text());if(!mergeable(o))throw 0;applyState(o);$("gShade").classList.remove("on");toast(tr("restored"))}catch(x){toast(tr("badFile"))}
+});
+$("gCloud").onclick=async()=>{
+  if(!cloud)return toast(tr("cloudOff"));
+  if(!$("gCloud").dataset.c){$("gCloud").dataset.c="1";$("gCloud").textContent=tr("confirmRestore");return}
+  try{
+    const s=await cloud.get();const o=s.exists&&JSON.parse(s.data().json);
+    if(!mergeable(o))return toast(tr("noBk"));
+    applyState(o);$("gShade").classList.remove("on");toast(tr("restored"));
+  }catch(e){toast(tr("fail"))}
+};
+setLang(LANG);
+(async function(){
+  try{
+    if(!window.claude)return;
+    const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+    if(!db||!user)return;
+    const id=await user.id();if(!id)return;
+    const ref=db.doc("data/users/"+id+"/backup");
+    const s=await ref.get();
+    cloud=ref;
+    if(s.exists){
+      const d=s.data();lastBk=d.at;
+      if(emptyAll()){try{const o=JSON.parse(d.json);if(mergeable(o)){applyState(o);toast(tr("restored"))}}catch(e){}}
+    }else if(!emptyAll())queueCloud();
+  }catch(e){cloud=null}
+})();
+
+// ===== Rating (first open) =====
+// Paste your Cloudflare Worker address here to receive ratings, e.g. "https://rate.yourname.workers.dev"
+const API="";   // ← ضع هنا رابط الـ Worker مثل: "https://notebook.yourname.workers.dev"
+const RATE_URL=API?API+"/rate":"";
+const RK="workNotebook.rated",RQ="workNotebook.rq";
+let stars=0;
+function rateDone(){try{localStorage.setItem(RK,"1")}catch(e){}$("rShade").classList.remove("on")}
+function showRate(){
+  try{if(localStorage.getItem(RK))return;localStorage.setItem(RK,"1")}catch(e){return}
+  setTimeout(()=>$("rShade").classList.add("on"),1500);
+}
+async function flushRatings(){
+  if(!RATE_URL)return;
+  let q=[];try{q=JSON.parse(localStorage.getItem(RQ)||"[]")}catch(e){}
+  const left=[];
+  for(const r of q){
+    try{const res=await fetch(RATE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(r)});if(!res.ok)left.push(r)}
+    catch(e){left.push(r)}
+  }
+  try{localStorage.setItem(RQ,JSON.stringify(left))}catch(e){}
+}
+$("stars").addEventListener("click",e=>{
+  const b=e.target.closest("[data-r]");if(!b)return;
+  stars=+b.dataset.r;
+  document.querySelectorAll("#stars button").forEach(x=>x.classList.toggle("on",+x.dataset.r<=stars));
+});
+$("rSend").onclick=()=>{
+  if(!stars)return toast(tr("pickStars"));
+  let q=[];try{q=JSON.parse(localStorage.getItem(RQ)||"[]")}catch(e){}
+  q.push({stars,note:$("rNote").value.trim().slice(0,500),lang:LANG,at:Date.now()});
+  try{localStorage.setItem(RQ,JSON.stringify(q))}catch(e){}
+  rateDone();toast(tr("thanks"));flushRatings();
+};
+$("rLater").onclick=rateDone;
+showRate();flushRatings();
+$("nudge").onclick=()=>{const t=new Date();Y=t.getFullYear();M=t.getMonth();render();openSheet(key(Y,M,t.getDate()),t.getDate())};
+
+// ===== Daily reminder (calendar file) + home-screen icon =====
+const rem=()=>S.rem||(S.rem={time:"18:00",days:[0,1,2,3,4]});
+function renderRem(){
+  const r=rem();$("rTime").value=r.time;
+  $("rDays").innerHTML=WD.map((w,i)=>'<button class="dayc'+(r.days.includes(i)?" on":"")+'" data-d="'+i+'">'+w+'</button>').join("");
+  $("homeD").textContent=tr(/iPhone|iPad|iPod/.test(navigator.userAgent)?"homeIos":"homeAnd");
+}
+$("rDays").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;const r=rem(),d=+b.dataset.d;r.days=r.days.includes(d)?r.days.filter(x=>x!==d):r.days.concat(d);persist();b.classList.toggle("on")});
+$("rTime").addEventListener("change",e=>{rem().time=e.target.value||"18:00";persist()});
+$("remAdd").onclick=async()=>{
+  const r=rem();if(!r.days.length)return toast(tr("pickDay"));
+  const [hh,mm]=r.time.split(":").map(Number),p=n=>String(n).padStart(2,"0");
+  const d=new Date();d.setSeconds(0,0);d.setHours(hh,mm);
+  for(let i=0;i<8&&!(r.days.includes(d.getDay())&&d>new Date());i++){d.setDate(d.getDate()+1);d.setHours(hh,mm)}
+  const ds=d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"T"+p(hh)+p(mm)+"00";
+  const n=new Date(),st=n.getUTCFullYear()+p(n.getUTCMonth()+1)+p(n.getUTCDate())+"T"+p(n.getUTCHours())+p(n.getUTCMinutes())+"00Z";
+  const by=["SU","MO","TU","WE","TH","FR","SA"],txt=tr("remAsk");
+  const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//AbdCode//WorkNotebook//EN","BEGIN:VEVENT","UID:worknotebook-reminder@abdcode","DTSTAMP:"+st,"DTSTART:"+ds,"DURATION:PT15M","RRULE:FREQ=WEEKLY;BYDAY="+r.days.slice().sort().map(i=>by[i]).join(","),"SUMMARY:📒 "+txt,"BEGIN:VALARM","TRIGGER:PT0M","ACTION:DISPLAY","DESCRIPTION:"+txt,"END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const ok=await saveFile({name:"work-reminder.ics",blob:new Blob([ics],{type:"text/calendar"})});
+  toast(ok?tr("remDone"):tr("noDl"));
+};
+
+render();
+
+// ===== Real push reminders (needs the Worker, see API above) =====
+const PUSH_OK="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const b64uToArr=s=>{const b=(s+"=".repeat((4-s.length%4)%4)).replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(b),c=>c.charCodeAt(0))};
+function lastLogged(){let m="";Object.values(S.books).forEach(b=>Object.keys(b.data||{}).forEach(k=>{if(k>m)m=k}));return m}
+let pushT=null;
+async function getSub(){try{const r=await navigator.serviceWorker.getRegistration();return r?await r.pushManager.getSubscription():null}catch(e){return null}}
+async function doSync(){
+  const sub=await getSub();if(!sub)return;const r=rem();
+  try{caches.open("wn-meta").then(c=>c.put("lang",new Response(LANG)))}catch(e){}
+  await fetch(API+"/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sub:sub.toJSON(),time:r.time,days:r.days,tz:Intl.DateTimeFormat().resolvedOptions().timeZone,lang:LANG,last:lastLogged()})});
+}
+function syncPush(){
+  if(!API||!PUSH_OK||Notification.permission!=="granted")return;
+  clearTimeout(pushT);pushT=setTimeout(()=>doSync().catch(()=>{}),1500);
+}
+async function refreshPush(){
+  const on=PUSH_OK&&Notification.permission==="granted"&&!!(await getSub());
+  $("pushBtn").textContent=tr(on?"pushOff":"pushOn");$("pushStat").textContent=on?tr("pushOk"):"";
+}
+async function enablePush(){
+  if(!API)return toast(tr("pushNoApi"));
+  if(!PUSH_OK||(isIOS&&!standalone()))return toast(tr("pushNeedHome"));
+  try{
+    const perm=await Notification.requestPermission();
+    if(perm!=="granted")return toast(tr("pushDenied"));
+    await navigator.serviceWorker.register("sw.js");await navigator.serviceWorker.ready;
+    const reg=await navigator.serviceWorker.getRegistration();
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){const key=(await (await fetch(API+"/vapid")).text()).trim();sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64uToArr(key)})}
+    await doSync();refreshPush();toast(tr("pushOk"));
+  }catch(e){toast(tr("pushFail"))}
+}
+async function disablePush(){
+  try{const sub=await getSub();if(sub){const ep=sub.endpoint;await sub.unsubscribe();if(API)fetch(API+"/unsub",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({endpoint:ep})}).catch(()=>{})}}catch(e){}
+  refreshPush();
+}
+$("pushBtn").onclick=async()=>{(PUSH_OK&&Notification.permission==="granted"&&await getSub())?disablePush():enablePush()};
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+syncPush();
+</script>
+</body>
+</html>
