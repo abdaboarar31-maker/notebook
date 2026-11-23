@@ -1,5 +1,5 @@
 // Service worker: works offline + shows the reminder notification when the server sends a push.
-const CACHE = "wn-v1";
+const CACHE = "wn-v1.1.0";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", (e) => {
@@ -26,7 +26,7 @@ self.addEventListener("fetch", (e) => {
 });
 
 const T = {
-  ar: ["📒 سجّلت يوم شغلك؟", "اضغط وسجّل يومك بثواني."],
+  ar: ["📒 هل سجّلت يوم عملك؟", "اضغط لتسجيل يومك في ثوانٍ."],
   he: ["📒 רשמת את יום העבודה?", "לחצו כדי לרשום בשניות."],
   en: ["📒 Did you log today?", "Tap to log your day in seconds."],
 };

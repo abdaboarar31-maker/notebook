@@ -11,7 +11,6 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>دفتر أيام العمل</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@700;800&display=swap">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 :root{
   --bg:#f3efe6;--card:#fffdf8;--ink:#23211c;--mute:#7a7467;--line:#e2dccd;
@@ -108,6 +107,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .about .logo{width:56px;height:56px;margin:0 auto 10px;border-radius:16px;background:#0f1722;color:#5eead4;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(94,234,212,.3),0 8px 20px rgba(20,184,166,.2)}
 .brand{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:25px;letter-spacing:.3px;direction:ltr}
 .brand span{color:#14b8a6}
+.aname{font-weight:800;margin-top:2px;font-size:16px}
 .about p{margin:6px 0 14px;color:var(--mute);font-size:13.5px;line-height:1.7}
 .links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .lk{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-weight:800;font-size:14px}
@@ -119,10 +119,42 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .top .ghost{margin-inline-end:8px}
 .month{min-width:96px;font-size:16px}
 .chip.sel[data-l]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.mail-row{display:flex;gap:8px;align-items:center}
-.mail-row .verify-btn{flex:0 0 auto;padding:11px 14px;border-radius:12px;border:0;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
-.mail-row .verify-btn.done{background:var(--work);color:#fff}
-.save-status{margin-top:8px;font-size:13.5px;font-weight:700;color:var(--work);min-height:18px}
+
+/* layout that fits any screen */
+html{-webkit-text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh;overflow-x:hidden}
+.app{width:100%;max-width:520px;padding:16px clamp(10px,3.5vw,18px) 40px}
+.grid>*{min-width:0}
+.sheet{max-height:90vh;max-height:90dvh}
+@media (max-width:360px){.top h1{font-size:18px}.day{font-size:14px}.sum b{font-size:20px}.btns button,.chip{font-size:13px}}
+@media (min-width:700px){.app{max-width:560px}.day{font-size:17px}}
+/* settings */
+.shead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.shead h3{margin:0}
+.x{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px;cursor:pointer}
+.sheet section{padding:14px 0;border-top:1px solid var(--line)}
+.sheet section:first-of-type{border-top:0}
+.sheet h4{margin:0 0 10px;font-size:15px}
+.hint{margin:6px 0 10px;color:var(--mute);font-size:13px;line-height:1.7}
+.swrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.swrow small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
+.sw{position:relative;width:52px;height:30px;flex:none;margin:0}
+.sw input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;padding:0;cursor:pointer;z-index:1}
+.sw span{position:absolute;inset:0;border-radius:999px;background:var(--line);transition:background .2s}
+.sw span:before{content:"";position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sw input:checked+span{background:var(--work)}
+.sw input:checked+span:before{transform:translateX(22px)}
+[dir=rtl] .sw input:checked+span:before{transform:translateX(-22px)}
+.sw input:focus-visible+span{outline:2px solid var(--off);outline-offset:2px}
+.days{display:flex;gap:6px;justify-content:center;margin:4px 0 12px;flex-wrap:wrap}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.btns.one{grid-template-columns:1fr}
+.btns button{padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.btns button.solid{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.stat{min-height:18px;margin-top:6px;font-size:13px;color:var(--work)}
+.ver{margin-top:6px;font-size:12.5px;color:var(--mute)}
+#gCode{margin-top:8px;text-align:center;letter-spacing:6px;font-size:20px}
+#gCodeBox[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -176,7 +208,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       </div>
     </div>
     <label for="note">ملاحظة</label>
-    <textarea id="note" placeholder="شو اشتغلت اليوم؟"></textarea>
+    <textarea id="note" placeholder="ماذا عملت اليوم؟"></textarea>
     <div class="acts">
       <button class="save" id="save">حفظ</button>
       <button class="del" id="del">حذف</button>
@@ -187,7 +219,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 <div class="shade" id="bShade"><div class="sheet" role="dialog" aria-modal="true">
   <h3 id="bTitle"></h3>
   <label for="bName">اسم القائمة (شخص أو شغلة)</label>
-  <input id="bName" maxlength="30" placeholder="مثلاً: شغل مع أبو أحمد">
+  <input id="bName" maxlength="30" placeholder="مثال: العمل مع أبي أحمد">
   <div class="acts"><button class="save" id="bSave">حفظ</button><button class="del" id="bDel">حذف</button></div>
 </div></div>
 <div class="shade" id="lShade"><div class="sheet" role="dialog" aria-modal="true">
@@ -199,51 +231,58 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   </div>
 </div></div>
 <div class="shade" id="gShade"><div class="sheet" role="dialog" aria-modal="true">
-  <h3 id="gTitle"></h3>
-  <label id="gContactL" for="gMail"></label>
-  <div id="contactFields">
-    <div class="mail-row">
-      <input id="gMail" type="email" inputmode="email" autocomplete="email">
-      <button type="button" class="verify-btn" id="mailStartVerifyBtn">تأكد</button>
-    </div>
-  </div>
-  <div id="mailOtpBox" style="display:none;margin-top:10px">
-    <label for="mailOtpInput">أدخل الكود اللي وصلك على الإيميل (6 أرقام)</label>
-    <div class="hrs">
-      <input id="mailOtpInput" type="text" inputmode="numeric" maxlength="6" placeholder="123456">
-      <button type="button" class="save" id="mailConfirmOtpBtn" style="flex:0 0 auto;padding:0 16px;font-size:14px">تأكيد</button>
-    </div>
-    <div class="none" id="mailOtpMsg" style="padding:6px 0 0;font-size:13px"></div>
-  </div>
-  <div class="acts"><button class="save" id="gSave"></button></div>
-  <div class="save-status" id="gSaveStatus"></div>
+  <div class="shead"><h3 data-i="settings"></h3><button class="x" id="gClose" aria-label="Close">✕</button></div>
 
-  <label id="gBackL" style="margin-top:16px"></label>
-  <div class="share" style="margin-top:6px"><button id="gExport"></button><button id="gImport"></button></div>
-  <input type="file" id="gFile" accept=".json,application/json" hidden>
-  <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="gCloud"></button></div>
-  <div class="none" id="gStat" style="padding:8px 0 0;font-size:13px"></div>
-  <div class="aboutT" id="remT"></div>
-  <p id="remD" style="margin:0 0 10px;color:var(--mute);font-size:13.5px;line-height:1.6"></p>
-  <div class="hrs" style="margin-bottom:10px"><input id="rTime" type="time" style="text-align:center"></div>
-  <div id="rDays" style="display:flex;gap:6px;justify-content:center;margin-bottom:12px"></div>
-  <div class="share" style="grid-template-columns:1fr;margin-top:0"><button id="remAdd"></button></div>
-  <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="pushBtn"></button></div>
-  <div class="share" style="grid-template-columns:1fr;margin-top:8px"><button id="testNotifBtn">إرسال إشعار حقيقي الآن</button></div>
-  <div class="none" id="pushStat" style="padding:6px 0 0;font-size:13px"></div>
-  <div class="aboutT" id="homeT"></div>
-  <p id="homeD" style="margin:0;color:var(--mute);font-size:13.5px;line-height:1.7"></p>
-  <div class="aboutT" id="aTitle"></div>
-  <div class="about">
-    <div class="logo"><svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 14 8 24l10 10M30 14l10 10-10 10"/></svg></div>
-    <div class="brand">Abd<span>Code</span></div>
-    <p id="aDesc"></p>
-    <div class="links">
-      <a class="lk site" href="https://abdcode.pages.dev" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg><span id="lkSiteT"></span></a>
-      <a class="lk yt" href="https://www.youtube.com/@abdcode3" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9.2v5.6l5-2.8z" fill="#fff"/></svg><span id="lkYtT"></span></a>
+  <section>
+    <h4 data-i="sNotif"></h4>
+    <div class="swrow"><div><b data-i="notifSw"></b><small id="nStat"></small></div><label class="sw"><input type="checkbox" id="pushSw"><span></span></label></div>
+    <p class="hint" data-i="notifHint"></p>
+    <label data-i="remTime"></label>
+    <input id="rTime" type="time" style="text-align:center">
+    <label data-i="remDays"></label>
+    <div id="rDays" class="days"></div>
+    <div class="btns"><button id="pushTest" data-i="pushTest"></button><button id="remAdd" data-i="remAdd"></button></div>
+  </section>
+
+  <section>
+    <h4 data-i="sDetails"></h4>
+    <input id="gPhone" type="tel" inputmode="tel" autocomplete="tel" data-ph="phonePh">
+    <input id="gMail" type="email" inputmode="email" autocomplete="email" data-ph="mailPh" style="margin-top:8px">
+    <div class="btns one"><button id="gSendCode" data-i="mailSend"></button></div>
+    <div id="gCodeBox" hidden>
+      <input id="gCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" data-ph="mailCodePh">
+      <div class="btns one"><button class="solid" id="gConfirm" data-i="mailConfirm"></button></div>
     </div>
-    <div class="rights" id="aRights"></div>
-  </div>
+    <div class="stat" id="gMailStat"></div>
+    <div class="btns one"><button class="solid" id="gSave" data-i="save"></button></div>
+  </section>
+
+  <section>
+    <h4 data-i="sBackup"></h4>
+    <p class="hint" data-i="backHint"></p>
+    <div class="btns"><button id="gExport" data-i="export"></button><button id="gImport" data-i="import"></button></div>
+    <input type="file" id="gFile" accept=".json,application/json" hidden>
+  </section>
+
+  <section>
+    <h4 data-i="sHome"></h4>
+    <p class="hint" id="homeD" style="margin:0"></p>
+  </section>
+
+  <section>
+    <h4 data-i="sRights"></h4>
+    <div class="about">
+      <div class="logo"><svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 14 8 24l10 10M30 14l10 10-10 10"/></svg></div>
+      <div class="brand">Abd<span>Code</span></div>
+      <div class="aname" data-i="author"></div>
+      <div class="links" style="margin-top:14px">
+        <a class="lk site" href="https://abdcode.pages.dev" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg><span data-i="siteL"></span></a>
+        <a class="lk yt" href="https://www.youtube.com/@abdcode3" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9.2v5.6l5-2.8z" fill="#fff"/></svg><span data-i="ytL"></span></a>
+      </div>
+      <div class="rights" data-i="rights"></div>
+      <div class="ver" id="aVer"></div>
+    </div>
+  </section>
 </div></div>
 <div class="shade" id="rShade"><div class="sheet" role="dialog" aria-modal="true">
   <h3 id="rTitle"></h3>
@@ -259,55 +298,318 @@ let WD=["ح","ن","ث","ر","خ","ج","س"];
 let SN={w:"عملت",o:"إجازة",a:"غياب"};
 const SC={w:"var(--work)",o:"var(--off)",a:"var(--abs)"};
 const I={
-ar:{title:"دفتر أيام العمل",days:"أيام عمل",hours:"ساعات",amount:"المبلغ",wageLbl:"أجرة اليوم:",wagePh:"اختياري",work:"عملت",off:"إجازة",abs:"غياب",notesH:"ملاحظات الشهر",wa:"إرسال بالواتساب",pdf:"تحميل PDF",hrsLbl:"عدد الساعات",noteLbl:"ملاحظة",notePh:"شو اشتغلت اليوم؟",save:"حفظ",del:"حذف",bName:"اسم القائمة (شخص أو شغلة)",bPh:"مثلاً: شغل مع أبو أحمد",langT:"اللغة",hr:"ساعة",empty:"اضغط على أي يوم لتسجّل فيه.",list:"قائمة",editList:"تعديل القائمة",newList:"قائمة جديدة",confirmDel:"تأكيد حذف القائمة وكل أيامها؟",day:"اليوم",status:"الحالة",hoursCol:"الساعات",noteCol:"ملاحظة",workDays:"أيام العمل",hoursTot:"الساعات",amountTot:"المبلغ",myBook:"دفتري",noRows:"ما في أيام مسجّلة بهالشهر",preparing:"عم بجهّز الـ PDF…",tapSend:"اضغط مرة ثانية للإرسال",noDl:"ما زبط التحميل هون",fail:"ما زبطت العملية",prev:"الشهر السابق",next:"الشهر التالي"},
-he:{title:"יומן ימי עבודה",days:"ימי עבודה",hours:"שעות",amount:"סכום",wageLbl:"שכר ליום:",wagePh:"אופציונלי",work:"עבדתי",off:"חופשה",abs:"היעדרות",notesH:"הערות החודש",wa:"שליחה בוואטסאפ",pdf:"הורדת PDF",hrsLbl:"מספר שעות",noteLbl:"הערה",notePh:"מה עבדת היום?",save:"שמירה",del:"מחיקה",bName:"שם הרשימה (אדם או עבודה)",bPh:"למשל: עבודה עם דני",langT:"שפה",hr:"שעות",empty:"לחצו על יום כדי לרשום בו.",list:"רשימה",editList:"עריכת רשימה",newList:"רשימה חדשה",confirmDel:"לאשר מחיקת הרשימה וכל הימים שלה?",day:"יום",status:"סטטוס",hoursCol:"שעות",noteCol:"הערה",workDays:"ימי עבודה",hoursTot:"שעות",amountTot:"סכום",myBook:"היומן שלי",noRows:"אין ימים רשומים בחודש הזה",preparing:"מכין PDF…",tapSend:"לחצו שוב לשליחה",noDl:"ההורדה לא זמינה כאן",fail:"הפעולה נכשלה",prev:"החודש הקודם",next:"החודש הבא"},
-en:{title:"Work Days Notebook",days:"Work days",hours:"Hours",amount:"Amount",wageLbl:"Daily wage:",wagePh:"Optional",work:"Worked",off:"Day off",abs:"Absent",notesH:"This month",wa:"Send on WhatsApp",pdf:"Download PDF",hrsLbl:"Hours worked",noteLbl:"Note",notePh:"What did you work on?",save:"Save",del:"Delete",bName:"List name (person or job)",bPh:"e.g. Work with Sam",langT:"Language",hr:"hrs",empty:"Tap any day to log it.",list:"List",editList:"Edit list",newList:"New list",confirmDel:"Delete this list and all its days?",day:"Day",status:"Status",hoursCol:"Hours",noteCol:"Note",workDays:"Work days",hoursTot:"Hours",amountTot:"Amount",myBook:"My notebook",noRows:"No days logged this month",preparing:"Preparing PDF…",tapSend:"Tap again to send",noDl:"Download isn’t available here",fail:"Something went wrong",prev:"Previous month",next:"Next month"}};
-Object.assign(I.ar,{payD:"يومية",payM:"شهري",wagePh:"أجرة اليوم",salaryPh:"الراتب الشهري",settings:"الإعدادات",contactL:"الإيميل",backL:"النسخ الاحتياطي",export:"حفظ نسخة بملف",import:"استرجاع من ملف",cloudRestore:"استرجاع من حسابي",mailPh:"الإيميل",saved:"تم الحفظ",restored:"رجّعت بياناتك من النسخة الاحتياطي",cloudOn:"النسخ التلقائي شغّال على حسابك",cloudOff:"النسخ التلقائي مش متاح هون — استخدم النسخة بملف",lastBk:"آخر نسخة:",noBk:"ما في نسخة محفوظة",badFile:"الملف مش صالح",confirmRestore:"تأكيد الاستبدال؟"});
-Object.assign(I.he,{payD:"יומי",payM:"חודשי",wagePh:"שכר ליום",salaryPh:"משכורת חודשית",settings:"הגדרות",contactL:"אימייל",backL:"גיבוי",export:"שמירת גיבוי לקובץ",import:"שחזור מקובץ",cloudRestore:"שחזור מהחשבון",mailPh:"אימייל",saved:"נשמר",restored:"הנתונים שוחזרו מהגיבוי",cloudOn:"גיבוי אוטומטי פעיל בחשבון שלך",cloudOff:"גיבוי אוטומטי לא זמין כאן — השתמשו בגיבוי לקובץ",lastBk:"גיבוי אחרון:",noBk:"אין גיבוי שמור",badFile:"הקובץ לא תקין",confirmRestore:"לאשר החלפה?"});
-Object.assign(I.en,{payD:"Daily",payM:"Monthly",wagePh:"Daily wage",salaryPh:"Monthly salary",settings:"Settings",contactL:"Email",backL:"Backup",export:"Save backup file",import:"Restore from file",cloudRestore:"Restore from my account",mailPh:"Email",saved:"Saved",restored:"Your data was restored from backup",cloudOn:"Automatic backup is on for your account",cloudOff:"Automatic backup isn’t available here — use the backup file",lastBk:"Last backup:",noBk:"No backup saved",badFile:"That file isn’t valid",confirmRestore:"Tap again to replace"});
-Object.assign(I.ar,{aboutT:"حول وحقوق",aboutD:"دفتر بسيط لتسجيل أيام عملك وساعاتك وأجرتك، وبتبعته PDF أو واتساب بضغطة.",siteL:"موقعي",ytL:"قناتي على يوتيوب",rights:"© 2026 Abd Code — جميع الحقوق محفوظة"});
-Object.assign(I.he,{aboutT:"אודות וזכויות",aboutD:"יומן פשוט לרישום ימי העבודה, השעות והשכר שלך, ושליחה כ-PDF או בוואטסאפ בלחיצה.",siteL:"האתר שלי",ytL:"ערוץ היוטיוב שלי",rights:"© 2026 Abd Code — כל הזכויות שמורות"});
-Object.assign(I.en,{aboutT:"About & rights",aboutD:"A simple notebook for your work days, hours and pay — send it as a PDF or on WhatsApp in one tap.",siteL:"My website",ytL:"My YouTube channel",rights:"© 2026 Abd Code — All rights reserved"});
-Object.assign(I.ar,{rateT:"كيف ولا الدفتر؟",rateD:"قيّمه بالنجوم واكتب رأيك، بيساعدني أحسّنه.",ratePh:"اكتب تعليقك (اختياري)",rateSend:"إرسال",rateLater:"مش هلأ",pickStars:"اختار عدد النجوم",thanks:"شكراً إلك!"});
-Object.assign(I.he,{rateT:"איך היומן?",rateD:"דרגו בכוכבים וכתבו את דעתכם, זה עוזר לי לשפר.",ratePh:"כתבו תגובה (אופציונלי)",rateSend:"שליחה",rateLater:"לא עכשיו",pickStars:"בחרו מספר כוכבים",thanks:"תודה!"});
-Object.assign(I.en,{rateT:"How do you like it?",rateD:"Rate it and leave a comment — it helps me improve it.",ratePh:"Your comment (optional)",rateSend:"Send",rateLater:"Not now",pickStars:"Pick a star rating",thanks:"Thank you!"});
-Object.assign(I.ar,{remT:"تذكير يومي",remD:"اختار الوقت والأيام وبنضيفه لتقويم جوالك، فبيذكّرك حتى لو البرنامج مسكّر.",remAdd:"إضافة التذكير للتقويم",remAsk:"سجّلت يوم شغلك؟",remDone:"جاهز — افتح الملف وأضفه للتقويم",pickDay:"اختار يوم واحد على الأقل",homeT:"أضفه على الشاشة الرئيسية",homeIos:"افتح الرابط بـ Safari، اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية».",homeAnd:"افتح الرابط بـ Chrome، اضغط ⋮ ثم «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»."});
-Object.assign(I.he,{remT:"תזכורת יומית",remD:"בחרו שעה וימים ונוסיף ליומן הטלפון, כך שתקבלו תזכורת גם כשהאפליקציה סגורה.",remAdd:"הוספת התזכורת ליומן",remAsk:"רשמת את יום העבודה?",remDone:"מוכן — פתחו את הקובץ והוסיפו ליומן",pickDay:"בחרו לפחות יום אחד",homeT:"הוספה למסך הבית",homeIos:"פתחו את הקישור ב-Safari, לחצו על כפתור השיתוף ואז «הוסף למסך הבית».",homeAnd:"פתחו את הקישור ב-Chrome, לחצו ⋮ ואז «התקן אפליקציה» או «הוסף למסך הבית»."});
-Object.assign(I.en,{remT:"Daily reminder",remD:"Pick a time and days and we’ll add it to your phone calendar, so it reminds you even when the app is closed.",remAdd:"Add reminder to calendar",remAsk:"Did you log today’s work?",remDone:"Ready — open the file and add it to your calendar",pickDay:"Pick at least one day",homeT:"Add to home screen",homeIos:"Open the link in Safari, tap Share, then “Add to Home Screen”.",homeAnd:"Open the link in Chrome, tap ⋮, then “Install app” or “Add to Home screen”."});
-Object.assign(I.ar,{nudge:"اليوم ما سجّلت يوم شغلك — اضغط لتسجّل"});
-Object.assign(I.he,{nudge:"היום עדיין לא רשמת — לחצו כדי לרשום"});
-Object.assign(I.en,{nudge:"You haven’t logged today — tap to log"});
-Object.assign(I.ar,{pushOn:"تفعيل إشعار التذكير",pushOff:"إيقاف إشعار التذكير",pushOk:"الإشعارات مفعّلة ✓",pushNeedHome:"على الآيفون: أضف التطبيق للشاشة الرئيسية أولاً وافتحه منها",pushDenied:"الإشعارات مرفوضة — فعّلها من إعدادات المتصفح أو الجوال",pushNoApi:"التذكير المحلي مفعّل ✓",pushFail:"ما زبط تفعيل الإشعار"});
-Object.assign(I.he,{pushOn:"הפעלת התראת תזכורת",pushOff:"כיבוי התראת התזכורת",pushOk:"ההתראות פעילות ✓",pushNeedHome:"באייפון: הוסיפו קודם למסך הבית ופתחו משם",pushDenied:"ההתראות חסומות — הפעילו אותן בהגדרות הדפדפן או הטלפון",pushNoApi:"התזכורת המקומית פעילה ✓",pushFail:"ההפעלה נכשלה"});
-Object.assign(I.en,{pushOn:"Turn on reminder notifications",pushOff:"Turn off reminder notifications",pushOk:"Notifications are on ✓",pushNeedHome:"On iPhone: add the app to your Home Screen first, then open it from there",pushDenied:"Notifications are blocked — allow them in your browser or phone settings",pushNoApi:"Local notifications are active ✓",pushFail:"Couldn’t turn on notifications"});
-const RANDOM_REMINDERS={
-  ar:[
-    "ما نسيت تسجّل يوم شغلك اليوم؟ افتح الدفتر وسجّله هلق 📒",
-    "تذكير سريع: اليوم لسا ما تسجّل في دفتر أيام العمل ⏱️",
-    "إذا اشتغلت اليوم أو أخذت إجازة، سجّلها قبل ما تنسى ✅",
-    "دفتر شغلك عم بيستناك — سجّل يومك وساعاتك اليوم 💼"
-  ],
-  he:[
-    "תזכורת: עדיין לא רשמת את יום העבודה של היום 📒",
-    "אל תשכחו לעדכן את יומן העבודה להיום ⏱️",
-    "עבדתם היום או יצאתם לחופשה? עדכנו עכשיו ✅",
-    "היומן מחכה לעדכון של היום 💼"
-  ],
-  en:[
-    "Quick reminder: you haven’t logged today’s work yet 📒",
-    "Don’t forget to update your work notebook for today ⏱️",
-    "Worked today or took a day off? Log it before you forget ✅",
-    "Your notebook is waiting — log today’s entry 💼"
-  ]
+ "ar": {
+  "title": "دفتر أيام العمل",
+  "days": "أيام العمل",
+  "hours": "الساعات",
+  "amount": "المبلغ",
+  "wagePh": "أجرة اليوم",
+  "salaryPh": "الراتب الشهري",
+  "work": "عمل",
+  "off": "إجازة",
+  "abs": "غياب",
+  "notesH": "ملاحظات الشهر",
+  "wa": "إرسال عبر واتساب",
+  "pdf": "تنزيل PDF",
+  "hrsLbl": "عدد الساعات",
+  "noteLbl": "ملاحظة",
+  "notePh": "ماذا عملت اليوم؟",
+  "save": "حفظ",
+  "del": "حذف",
+  "bName": "اسم القائمة (شخص أو عمل)",
+  "bPh": "مثال: العمل مع أبي أحمد",
+  "langT": "اللغة",
+  "hr": "ساعة",
+  "empty": "اضغط على أي يوم لتسجيله.",
+  "list": "قائمة",
+  "editList": "تعديل القائمة",
+  "newList": "قائمة جديدة",
+  "confirmDel": "تأكيد حذف القائمة وجميع أيامها؟",
+  "day": "اليوم",
+  "status": "الحالة",
+  "hoursCol": "الساعات",
+  "noteCol": "ملاحظة",
+  "workDays": "أيام العمل",
+  "hoursTot": "الساعات",
+  "amountTot": "المبلغ",
+  "myBook": "دفتري",
+  "noRows": "لا توجد أيام مسجلة في هذا الشهر",
+  "preparing": "جارٍ تجهيز الملف…",
+  "tapSend": "اضغط مرة أخرى للإرسال",
+  "noDl": "تعذّر التنزيل",
+  "fail": "تعذّر إتمام العملية",
+  "prev": "الشهر السابق",
+  "next": "الشهر التالي",
+  "payD": "يومية",
+  "payM": "شهري",
+  "settings": "الإعدادات",
+  "close": "إغلاق",
+  "sNotif": "التذكير والإشعارات",
+  "sDetails": "بياناتك (اختيارية)",
+  "sBackup": "النسخ الاحتياطي",
+  "sHome": "إضافة التطبيق إلى الشاشة الرئيسية",
+  "sRights": "الحقوق",
+  "notifSw": "إشعارات التذكير على الشاشة",
+  "notifHint": "يصلك إشعار على شاشة الهاتف، حتى والتطبيق مغلق، إذا لم تسجّل يومك في الوقت المحدد.",
+  "notifOn": "الإشعارات مفعّلة",
+  "notifOff": "الإشعارات متوقفة",
+  "remTime": "وقت التذكير",
+  "remDays": "أيام التذكير",
+  "pushTest": "إرسال إشعار تجريبي",
+  "pushTestNeed": "فعّل الإشعارات أولاً",
+  "pushTestBody": "هكذا سيظهر التذكير على شاشتك.",
+  "remAdd": "إضافة التذكير إلى تقويم الهاتف",
+  "remAsk": "هل سجّلت يوم عملك؟",
+  "remDone": "الملف جاهز، افتحه وأضفه إلى التقويم",
+  "pickDay": "اختر يوماً واحداً على الأقل",
+  "phonePh": "رقم الهاتف",
+  "mailPh": "البريد الإلكتروني",
+  "mailSend": "إرسال رمز التأكيد",
+  "mailCodePh": "أدخل الرمز المكوّن من 6 أرقام",
+  "mailConfirm": "تأكيد",
+  "mailBad": "البريد الإلكتروني غير صحيح",
+  "codeSent": "تم إرسال الرمز إلى بريدك الإلكتروني",
+  "codeBad": "الرمز يتكوّن من 6 أرقام",
+  "codeWrong": "الرمز غير صحيح أو منتهي الصلاحية",
+  "mailVerified": "✓ تم تأكيد البريد الإلكتروني",
+  "mailVerifiedToast": "تم تأكيد بريدك الإلكتروني",
+  "saved": "تم الحفظ",
+  "export": "حفظ نسخة احتياطية",
+  "import": "استرجاع من ملف",
+  "restored": "تمت استعادة بياناتك",
+  "badFile": "الملف غير صالح",
+  "backHint": "احفظ نسخة في ملف لتستعيد دفترك عند الحاجة.",
+  "homeIos": "افتح الرابط في متصفح Safari، ثم اضغط زر المشاركة واختر «إضافة إلى الشاشة الرئيسية».",
+  "homeAnd": "افتح الرابط في متصفح Chrome، ثم اضغط ⋮ واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».",
+  "author": "عبد أبو عرار",
+  "siteL": "موقعي",
+  "ytL": "قناتي على يوتيوب",
+  "rights": "© 2026 Abd Code — جميع الحقوق محفوظة",
+  "version": "الإصدار",
+  "rateT": "ما رأيك بالدفتر؟",
+  "rateD": "قيّمه بالنجوم واكتب رأيك، فهذا يساعدني على تحسينه.",
+  "ratePh": "اكتب تعليقك (اختياري)",
+  "rateSend": "إرسال",
+  "rateLater": "ليس الآن",
+  "pickStars": "اختر عدد النجوم",
+  "thanks": "شكراً لك!",
+  "nudge": "لم تسجّل يوم عملك اليوم — اضغط للتسجيل",
+  "pushDenied": "الإشعارات محظورة، فعّلها من إعدادات الهاتف",
+  "pushNeedHome": "على الآيفون: أضف التطبيق إلى الشاشة الرئيسية أولاً ثم افتحه منها",
+  "pushNoApi": "خدمة الإشعارات غير مهيّأة بعد",
+  "pushFail": "تعذّر تفعيل الإشعارات"
+ },
+ "he": {
+  "title": "יומן ימי עבודה",
+  "days": "ימי עבודה",
+  "hours": "שעות",
+  "amount": "סכום",
+  "wagePh": "שכר ליום",
+  "work": "עבדתי",
+  "off": "חופשה",
+  "abs": "היעדרות",
+  "notesH": "הערות החודש",
+  "wa": "שליחה בוואטסאפ",
+  "pdf": "הורדת PDF",
+  "hrsLbl": "מספר שעות",
+  "noteLbl": "הערה",
+  "notePh": "מה עבדת היום?",
+  "save": "שמירה",
+  "del": "מחיקה",
+  "bName": "שם הרשימה (אדם או עבודה)",
+  "bPh": "למשל: עבודה עם דני",
+  "langT": "שפה",
+  "hr": "שעות",
+  "empty": "לחצו על יום כדי לרשום בו.",
+  "list": "רשימה",
+  "editList": "עריכת רשימה",
+  "newList": "רשימה חדשה",
+  "confirmDel": "לאשר מחיקת הרשימה וכל הימים שלה?",
+  "day": "יום",
+  "status": "סטטוס",
+  "hoursCol": "שעות",
+  "noteCol": "הערה",
+  "workDays": "ימי עבודה",
+  "hoursTot": "שעות",
+  "amountTot": "סכום",
+  "myBook": "היומן שלי",
+  "noRows": "אין ימים רשומים בחודש הזה",
+  "preparing": "מכין PDF…",
+  "tapSend": "לחצו שוב לשליחה",
+  "noDl": "ההורדה לא זמינה כאן",
+  "fail": "הפעולה נכשלה",
+  "prev": "החודש הקודם",
+  "next": "החודש הבא",
+  "payD": "יומי",
+  "payM": "חודשי",
+  "salaryPh": "משכורת חודשית",
+  "settings": "הגדרות",
+  "export": "שמירת גיבוי לקובץ",
+  "import": "שחזור מקובץ",
+  "phonePh": "מספר טלפון",
+  "mailPh": "אימייל",
+  "saved": "נשמר",
+  "restored": "הנתונים שוחזרו מהגיבוי",
+  "badFile": "הקובץ לא תקין",
+  "author": "עבד אבו ערער",
+  "siteL": "האתר שלי",
+  "ytL": "ערוץ היוטיוב שלי",
+  "rights": "© 2026 Abd Code — כל הזכויות שמורות",
+  "rateT": "איך היומן?",
+  "rateD": "דרגו בכוכבים וכתבו את דעתכם, זה עוזר לי לשפר.",
+  "ratePh": "כתבו תגובה (אופציונלי)",
+  "rateSend": "שליחה",
+  "rateLater": "לא עכשיו",
+  "pickStars": "בחרו מספר כוכבים",
+  "thanks": "תודה!",
+  "remAdd": "הוספת התזכורת ליומן",
+  "remAsk": "רשמת את יום העבודה?",
+  "remDone": "מוכן — פתחו את הקובץ והוסיפו ליומן",
+  "pickDay": "בחרו לפחות יום אחד",
+  "homeIos": "פתחו את הקישור ב-Safari, לחצו על כפתור השיתוף ואז «הוסף למסך הבית».",
+  "homeAnd": "פתחו את הקישור ב-Chrome, לחצו ⋮ ואז «התקן אפליקציה» או «הוסף למסך הבית».",
+  "nudge": "היום עדיין לא רשמת — לחצו כדי לרשום",
+  "pushNeedHome": "באייפון: הוסיפו קודם למסך הבית ופתחו משם",
+  "pushDenied": "ההתראות חסומות — הפעילו אותן בהגדרות הטלפון",
+  "pushNoApi": "התזכורת האמיתית עדיין לא מוכנה",
+  "pushFail": "ההפעלה נכשלה",
+  "close": "סגירה",
+  "sNotif": "תזכורות והתראות",
+  "sDetails": "הפרטים שלך (אופציונלי)",
+  "sBackup": "גיבוי",
+  "sHome": "הוספה למסך הבית",
+  "sRights": "זכויות",
+  "notifSw": "התראות תזכורת על המסך",
+  "notifHint": "תקבלו התראה בטלפון, גם כשהאפליקציה סגורה, אם לא רשמתם את היום עד השעה שנקבעה.",
+  "notifOn": "ההתראות פעילות",
+  "notifOff": "ההתראות כבויות",
+  "remTime": "שעת התזכורת",
+  "remDays": "ימי התזכורת",
+  "pushTest": "שליחת התראת ניסיון",
+  "pushTestNeed": "הפעילו התראות תחילה",
+  "pushTestBody": "כך תופיע התזכורת על המסך שלכם.",
+  "mailSend": "שליחת קוד אימות",
+  "mailCodePh": "הזינו את הקוד בן 6 הספרות",
+  "mailConfirm": "אישור",
+  "mailBad": "כתובת האימייל אינה תקינה",
+  "codeSent": "הקוד נשלח לאימייל שלכם",
+  "codeBad": "הקוד מורכב מ-6 ספרות",
+  "codeWrong": "הקוד שגוי או שפג תוקפו",
+  "mailVerified": "✓ האימייל אומת",
+  "mailVerifiedToast": "האימייל אומת",
+  "backHint": "שמרו עותק בקובץ כדי לשחזר את היומן בעת הצורך.",
+  "version": "גרסה"
+ },
+ "en": {
+  "title": "Work Days Notebook",
+  "days": "Work days",
+  "hours": "Hours",
+  "amount": "Amount",
+  "wagePh": "Daily wage",
+  "work": "Worked",
+  "off": "Day off",
+  "abs": "Absent",
+  "notesH": "This month",
+  "wa": "Send on WhatsApp",
+  "pdf": "Download PDF",
+  "hrsLbl": "Hours worked",
+  "noteLbl": "Note",
+  "notePh": "What did you work on?",
+  "save": "Save",
+  "del": "Delete",
+  "bName": "List name (person or job)",
+  "bPh": "e.g. Work with Sam",
+  "langT": "Language",
+  "hr": "hrs",
+  "empty": "Tap any day to log it.",
+  "list": "List",
+  "editList": "Edit list",
+  "newList": "New list",
+  "confirmDel": "Delete this list and all its days?",
+  "day": "Day",
+  "status": "Status",
+  "hoursCol": "Hours",
+  "noteCol": "Note",
+  "workDays": "Work days",
+  "hoursTot": "Hours",
+  "amountTot": "Amount",
+  "myBook": "My notebook",
+  "noRows": "No days logged this month",
+  "preparing": "Preparing PDF…",
+  "tapSend": "Tap again to send",
+  "noDl": "Download isn’t available here",
+  "fail": "Something went wrong",
+  "prev": "Previous month",
+  "next": "Next month",
+  "payD": "Daily",
+  "payM": "Monthly",
+  "salaryPh": "Monthly salary",
+  "settings": "Settings",
+  "export": "Save backup file",
+  "import": "Restore from file",
+  "phonePh": "Phone number",
+  "mailPh": "Email",
+  "saved": "Saved",
+  "restored": "Your data was restored from backup",
+  "badFile": "That file isn’t valid",
+  "author": "Abd Abu Arar",
+  "siteL": "My website",
+  "ytL": "My YouTube channel",
+  "rights": "© 2026 Abd Code — All rights reserved",
+  "rateT": "How do you like it?",
+  "rateD": "Rate it and leave a comment — it helps me improve it.",
+  "ratePh": "Your comment (optional)",
+  "rateSend": "Send",
+  "rateLater": "Not now",
+  "pickStars": "Pick a star rating",
+  "thanks": "Thank you!",
+  "remAdd": "Add reminder to calendar",
+  "remAsk": "Did you log today’s work?",
+  "remDone": "Ready — open the file and add it to your calendar",
+  "pickDay": "Pick at least one day",
+  "homeIos": "Open the link in Safari, tap Share, then “Add to Home Screen”.",
+  "homeAnd": "Open the link in Chrome, tap ⋮, then “Install app” or “Add to Home screen”.",
+  "nudge": "You haven’t logged today — tap to log",
+  "pushNeedHome": "On iPhone: add the app to your Home Screen first, then open it from there",
+  "pushDenied": "Notifications are blocked — allow them in your phone settings",
+  "pushNoApi": "Real reminders aren’t set up yet",
+  "pushFail": "Couldn’t turn on notifications",
+  "close": "Close",
+  "sNotif": "Reminders & notifications",
+  "sDetails": "Your details (optional)",
+  "sBackup": "Backup",
+  "sHome": "Add to home screen",
+  "sRights": "Rights",
+  "notifSw": "Reminder notifications on screen",
+  "notifHint": "You’ll get a notification on your phone, even when the app is closed, if you haven’t logged your day by the chosen time.",
+  "notifOn": "Notifications are on",
+  "notifOff": "Notifications are off",
+  "remTime": "Reminder time",
+  "remDays": "Reminder days",
+  "pushTest": "Send a test notification",
+  "pushTestNeed": "Turn on notifications first",
+  "pushTestBody": "This is how the reminder will look on your screen.",
+  "mailSend": "Send verification code",
+  "mailCodePh": "Enter the 6-digit code",
+  "mailConfirm": "Confirm",
+  "mailBad": "That email address isn’t valid",
+  "codeSent": "The code was sent to your email",
+  "codeBad": "The code has 6 digits",
+  "codeWrong": "The code is wrong or has expired",
+  "mailVerified": "✓ Email verified",
+  "mailVerifiedToast": "Email verified",
+  "backHint": "Save a copy to a file so you can restore your notebook if needed.",
+  "version": "Version"
+ }
 };
-function pickRandomReminder(){
-  const list=RANDOM_REMINDERS[LANG]||RANDOM_REMINDERS.ar;
-  return list[Math.floor(Math.random()*list.length)];
-}
 const MO={ar:MONTHS,he:["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"],en:["January","February","March","April","May","June","July","August","September","October","November","December"]};
 const WDL={ar:WD,he:["א","ב","ג","ד","ה","ו","ש"],en:["S","M","T","W","T","F","S"]};
 const LK="workNotebook.lang";
-let LANG="en",RTL=false,ready=null,cloud=null,cloudT=null,lastBk=null;
+// Version history
+// 1.1.0  settings reorganised, notification switch + test, email verification, formal Arabic, responsive layout
+// 1.0.0  first release
+const APP_VERSION="1.1.0";
+let LANG="en",RTL=false,ready=null;
 (function(){let l=null;try{l=localStorage.getItem(LK)}catch(e){}
   if(!I[l]){const n=((navigator.languages&&navigator.languages[0])||navigator.language||"en").toLowerCase();l=n.startsWith("ar")?"ar":(n.startsWith("he")||n.startsWith("iw"))?"he":"en"}
   LANG=l;RTL=l!=="en"})();
@@ -320,9 +622,8 @@ if(!S||!S.books){
   try{od=JSON.parse(localStorage.getItem("workNotebook.v1")||"{}")||{};ow=localStorage.getItem("workNotebook.wage")||""}catch(e){}
   S={cur:"b0",books:{b0:{name:tr("myBook"),wage:ow,data:od}}};
 }
-if(!S.me)S.me={email:"",emailVerified:false};
 function load(){const b=S.books[S.cur];data=b.data;wage=b.wage||"";pay=b.pay||"d"}
-function persist(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}queueCloud();syncPush()}
+function persist(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}syncPush()}
 load();
 const $=id=>document.getElementById(id);
 const now=new Date();let Y=now.getFullYear(),M=now.getMonth();
@@ -440,9 +741,10 @@ async function getPDF(){
   return ready;
 }
 async function saveFile(r){
-  let dl=null;try{dl=window.claude?await claude.use("downloads"):null}catch(e){}
-  if(!dl){try{const a=document.createElement("a");a.href=URL.createObjectURL(r.blob);a.download=r.name;document.body.appendChild(a);a.click();a.remove();return true}catch(e){return false}}
-  try{await dl.save({filename:r.name,data:r.blob});return true}catch(e){return !!(e&&e.code==="declined")}
+  try{
+    const a=document.createElement("a");a.href=URL.createObjectURL(r.blob);a.download=r.name;
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);return true;
+  }catch(e){return false}
 }
 $("wa").onclick=async()=>{
   if(!monthRows().length)return toast(tr("noRows"));
@@ -522,12 +824,13 @@ function setLang(l){
   MONTHS=MO[l];WD=WDL[l];SN={w:tr("work"),o:tr("off"),a:tr("abs")};
   const h=document.documentElement;h.lang=l;h.dir=RTL?"rtl":"ltr";
   document.title=tr("title");try{caches.open("wn-meta").then(c=>c.put("lang",new Response(l)))}catch(e){}
-  [["#ttl","title"],["h2","notesH"],["label[for=hrs]","hrsLbl"],["label[for=note]","noteLbl"],["#save","save"],["#del","del"],["label[for=bName]","bName"],["#bSave","save"],["#lTitle","langT"],["#aTitle","aboutT"],["#aDesc","aboutD"],["#lkSiteT","siteL"],["#lkYtT","ytL"],["#aRights","rights"],["#rTitle","rateT"],["#rDesc","rateD"],["#rSend","rateSend"],["#rLater","rateLater"],["#remT","remT"],["#remD","remD"],["#remAdd","remAdd"],["#homeT","homeT"]].forEach(([s,k])=>{document.querySelector(s).textContent=tr(k)});
-  [[".sum span",["days","hours","amount"]],[".legend span",["work","off","abs"]],["#chips .chip",["work","off","abs"]]].forEach(([s,ks])=>document.querySelectorAll(s).forEach((e,i)=>{e.textContent=tr(ks[i])}));
-  $("pay").children[0].textContent=tr("payD");$("pay").children[1].textContent=tr("payM");
-  [["gTitle","settings"],["gContactL","contactL"],["gBackL","backL"],["gExport","export"],["gImport","import"],["gCloud","cloudRestore"],["gSave","save"]].forEach(([i,k])=>{$(i).textContent=tr(k)});
-  $("rNote").placeholder=tr("ratePh");$("gMail").placeholder=tr("mailPh");$("gear").setAttribute("aria-label",tr("settings"));
-  $("wage").placeholder=tr("wagePh");$("note").placeholder=tr("notePh");$("bName").placeholder=tr("bPh");
+  [["#ttl","title"],["h2","notesH"],["label[for=hrs]","hrsLbl"],["label[for=note]","noteLbl"],["#save","save"],["#del","del"],["label[for=bName]","bName"],["#bSave","save"],["#lTitle","langT"],["#pdf","pdf"],["#rTitle","rateT"],["#rDesc","rateD"],["#rSend","rateSend"],["#rLater","rateLater"]].forEach(([s,k])=>{document.querySelector(s).textContent=tr(k)});
+  [[".sum span",["days","hours","amount"]],[".legend span",["work","off","abs"]],["#chips .chip",["work","off","abs"]],["#pay button",["payD","payM"]]].forEach(([s,ks])=>document.querySelectorAll(s).forEach((e,i)=>{e.textContent=tr(ks[i])}));
+  document.querySelectorAll("[data-i]").forEach(e=>{e.textContent=tr(e.dataset.i)});
+  document.querySelectorAll("[data-ph]").forEach(e=>{e.placeholder=tr(e.dataset.ph)});
+  $("aVer").textContent=tr("version")+" "+APP_VERSION;
+  $("note").placeholder=tr("notePh");$("bName").placeholder=tr("bPh");$("rNote").placeholder=tr("ratePh");
+  $("gear").setAttribute("aria-label",tr("settings"));$("gClose").setAttribute("aria-label",tr("close"));
   $("prev").textContent=RTL?"›":"‹";$("next").textContent=RTL?"‹":"›";
   $("prev").setAttribute("aria-label",tr("prev"));$("next").setAttribute("aria-label",tr("next"));
   $("wds").innerHTML=WD.map(w=>'<div class="wd">'+w+'</div>').join("");
@@ -539,157 +842,57 @@ $("lChips").addEventListener("click",e=>{const c=e.target.closest("[data-l]");if
 $("lShade").addEventListener("click",e=>{if(e.target===$("lShade"))$("lShade").classList.remove("on")});
 function amt(days){return pay==="m"?+wage:days*(+wage)}
 function mergeable(o){return !!(o&&o.books&&o.cur&&o.books[o.cur])}
-function emptyAll(){return Object.values(S.books).every(b=>!Object.keys(b.data||{}).length)}
-function applyState(o){S=o;if(!S.me)S.me={email:"",emailVerified:false};load();$("wage").value=wage;persist();setLang(LANG)}
-function queueCloud(){
-  if(!cloud)return;clearTimeout(cloudT);
-  cloudT=setTimeout(async()=>{try{const at=Date.now();await cloud.set({json:JSON.stringify(S),at});lastBk=at}catch(e){}},1200);
-}
+function applyState(o){S=o;load();$("wage").value=wage;persist();setLang(LANG)}
 $("pay").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(b){pay=b.dataset.p;S.books[S.cur].pay=pay;persist();render()}});
-function gStat(){
-  $("gStat").textContent=cloud?(lastBk?tr("lastBk")+" "+new Date(lastBk).toLocaleString():tr("cloudOn")):tr("cloudOff");
-}
 
-// ===== EmailJS OTP + Save on same page =====
-const EJS_PUBLIC_KEY="n-3RJqeFuNzD-KmW8";
-const EJS_SERVICE_ID="service_gehhxjs";
-const EJS_TEMPLATE_ID="template_gj7tnqi";
-
-if(window.emailjs&&EJS_PUBLIC_KEY&&EJS_PUBLIC_KEY!=="YOUR_PUBLIC_KEY"){
-  try{emailjs.init({publicKey:EJS_PUBLIC_KEY})}catch(_){}
-}
-
-let mailOtpCode="",mailOtpExp=0,pendingMail="",mailVerifiedInSession=false;
-
-function updateMailVerifyBtnState(verified){
-  const btn=$("mailStartVerifyBtn");
-  if(verified){
-    btn.textContent="تم التفعيل";
-    btn.classList.add("done");
-  }else{
-    btn.textContent="تأكد";
-    btn.classList.remove("done");
-  }
-}
-
-$("gMail").addEventListener("input",()=>{
-  const curMail=$("gMail").value.trim();
-  const isSameVerified=!!(S.me&&S.me.email===curMail&&S.me.emailVerified);
-  mailVerifiedInSession=isSameVerified;
-  $("gSaveStatus").textContent="";
-  updateMailVerifyBtnState(isSameVerified);
-});
-
+// ===== Settings =====
+function closeSettings(){$("gShade").classList.remove("on")}
+function mailStat(){const m=S.me||{};$("gMailStat").textContent=m.email&&m.verified===m.email?tr("mailVerified"):""}
 $("gear").onclick=()=>{
   renderRem();refreshPush();
-  const me=S.me||{};
-  $("gMail").value=me.email||"";
-  mailVerifiedInSession=!!(me.email&&me.emailVerified);
-  updateMailVerifyBtnState(mailVerifiedInSession);
-  $("mailOtpBox").style.display="none";
-  $("mailOtpInput").value="";
-  $("mailOtpMsg").textContent="";
-  $("gSaveStatus").textContent="";
-  mailOtpCode="";pendingMail="";
-  $("gCloud").dataset.c="";$("gCloud").textContent=tr("cloudRestore");gStat();
+  const me=S.me||{};$("gPhone").value=me.phone||"";$("gMail").value=me.email||"";
+  $("gCode").value="";$("gCodeBox").hidden=true;mailStat();
   $("gShade").classList.add("on");
 };
-$("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))$("gShade").classList.remove("on")});
-
-$("mailStartVerifyBtn").onclick=async()=>{
-  const mail=$("gMail").value.trim();
-  if(!mail||!mail.includes("@")){
-    $("mailOtpBox").style.display="block";
-    $("mailOtpMsg").textContent="اكتب إيميل صحيح أولاً.";
-    return;
-  }
-  if(!window.emailjs){
-    $("mailOtpBox").style.display="block";
-    $("mailOtpMsg").textContent="تعذر تحميل مكتبة EmailJS.";
-    return;
-  }
-  pendingMail=mail;
-  mailOtpCode=Math.floor(100000+Math.random()*900000).toString();
-  mailOtpExp=Date.now()+15*60*1000;
-  $("mailOtpBox").style.display="block";
-  $("mailOtpInput").value="";
-  $("mailOtpMsg").textContent="جاري إرسال الكود إلى "+mail+"...";
-
-  const expTime=new Date(mailOtpExp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-  try{
-    await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
-      to_email:mail,
-      email:mail,
-      passcode:mailOtpCode,
-      time:expTime
-    });
-    $("mailOtpMsg").textContent="تم إرسال الكود إلى "+mail+" — أدخله واضغط تأكيد.";
-  }catch(_){
-    $("mailOtpMsg").textContent="تعذر إرسال الكود، تحقق من إعدادات القالب في EmailJS.";
-  }
-};
-
-$("mailConfirmOtpBtn").onclick=()=>{
-  const code=$("mailOtpInput").value.trim();
-  if(!mailOtpCode)return $("mailOtpMsg").textContent="اضغط تأكد بجانب الإيميل أولاً.";
-  if(Date.now()>mailOtpExp)return $("mailOtpMsg").textContent="انتهت صلاحية الكود، اضغط تأكد لإرسال كود جديد.";
-  if(code===mailOtpCode){
-    mailVerifiedInSession=true;
-    mailOtpCode="";
-    updateMailVerifyBtnState(true);
-    $("mailOtpMsg").textContent="تم التفعيل";
-    toast("تم التفعيل");
-  }else{
-    $("mailOtpMsg").textContent="الكود غير صحيح.";
-  }
-};
-
+$("gClose").onclick=closeSettings;
+$("gShade").addEventListener("click",e=>{if(e.target===$("gShade"))closeSettings()});
 $("gSave").onclick=()=>{
+  const m=S.me||{},mail=$("gMail").value.trim();
+  S.me={phone:$("gPhone").value.trim(),email:mail,verified:m.verified===mail?mail:""};
+  persist();mailStat();toast(tr("saved"));
+};
+const MAIL_RE=/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+$("gSendCode").onclick=async()=>{
   const mail=$("gMail").value.trim();
-  const verified=!!(mail&&mailVerifiedInSession&&(!pendingMail||pendingMail===mail));
-  S.me={email:mail,emailVerified:verified};
-  persist();
-  $("gSaveStatus").textContent="تم الحفظ";
-  toast("تم الحفظ");
+  if(!MAIL_RE.test(mail))return toast(tr("mailBad"));
+  if(!API)return toast(tr("pushNoApi"));
+  try{
+    const r=await fetch(API+"/email/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:mail,lang:LANG})});
+    if(!r.ok)throw 0;
+    $("gCodeBox").hidden=false;$("gCode").focus();toast(tr("codeSent"));
+  }catch(e){toast(tr("fail"))}
 };
-
-$("gExport").onclick=async()=>{
-  const ok=await saveFile({name:"work-notebook-backup.json",blob:new Blob([JSON.stringify(S)],{type:"application/json"})});
-  if(!ok)toast(tr("noDl"));
+$("gConfirm").onclick=async()=>{
+  const mail=$("gMail").value.trim(),code=$("gCode").value.trim();
+  if(!/^\d{6}$/.test(code))return toast(tr("codeBad"));
+  try{
+    const r=await fetch(API+"/email/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:mail,code})});
+    if(!r.ok)throw 0;
+    S.me={phone:$("gPhone").value.trim(),email:mail,verified:mail};persist();
+    $("gCodeBox").hidden=true;mailStat();toast(tr("mailVerifiedToast"));
+  }catch(e){toast(tr("codeWrong"))}
 };
+$("gExport").onclick=async()=>{if(!(await saveFile({name:"work-notebook-backup.json",blob:new Blob([JSON.stringify(S)],{type:"application/json"})})))toast(tr("noDl"))};
 $("gImport").onclick=()=>$("gFile").click();
 $("gFile").addEventListener("change",async e=>{
   const f=e.target.files[0];e.target.value="";if(!f)return;
-  try{const o=JSON.parse(await f.text());if(!mergeable(o))throw 0;applyState(o);$("gShade").classList.remove("on");toast(tr("restored"))}catch(x){toast(tr("badFile"))}
+  try{const o=JSON.parse(await f.text());if(!mergeable(o))throw 0;applyState(o);closeSettings();toast(tr("restored"))}catch(x){toast(tr("badFile"))}
 });
-$("gCloud").onclick=async()=>{
-  if(!cloud)return toast(tr("cloudOff"));
-  if(!$("gCloud").dataset.c){$("gCloud").dataset.c="1";$("gCloud").textContent=tr("confirmRestore");return}
-  try{
-    const s=await cloud.get();const o=s.exists&&JSON.parse(s.data().json);
-    if(!mergeable(o))return toast(tr("noBk"));
-    applyState(o);$("gShade").classList.remove("on");toast(tr("restored"));
-  }catch(e){toast(tr("fail"))}
-};
 setLang(LANG);
-(async function(){
-  try{
-    if(!window.claude)return;
-    const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
-    if(!db||!user)return;
-    const id=await user.id();if(!id)return;
-    const ref=db.doc("data/users/"+id+"/backup");
-    const s=await ref.get();
-    cloud=ref;
-    if(s.exists){
-      const d=s.data();lastBk=d.at;
-      if(emptyAll()){try{const o=JSON.parse(d.json);if(mergeable(o)){applyState(o);toast(tr("restored"))}}catch(e){}}
-    }else if(!emptyAll())queueCloud();
-  }catch(e){cloud=null}
-})();
 
 // ===== Rating (first open) =====
-const API="";
+// Paste your Cloudflare Worker address here to receive ratings, e.g. "https://rate.yourname.workers.dev"
+const API="";   // ← ضع هنا رابط الـ Worker مثل: "https://notebook.yourname.workers.dev"
 const RATE_URL=API?API+"/rate":"";
 const RK="workNotebook.rated",RQ="workNotebook.rq";
 let stars=0;
@@ -725,22 +928,22 @@ showRate();flushRatings();
 $("nudge").onclick=()=>{const t=new Date();Y=t.getFullYear();M=t.getMonth();render();openSheet(key(Y,M,t.getDate()),t.getDate())};
 
 // ===== Daily reminder (calendar file) + home-screen icon =====
-const rem=()=>S.rem||(S.rem={time:"18:00",days:[0,1,2,3,4],notifEnabled:false,lastNotif:""});
+const rem=()=>S.rem||(S.rem={time:"18:00",days:[0,1,2,3,4]});
 function renderRem(){
-  const r=rem();$("rTime").value=r.time||"18:00";
-  $("rDays").innerHTML=WD.map((w,i)=>'<button class="dayc'+((r.days||[]).includes(i)?" on":"")+'" data-d="'+i+'">'+w+'</button>').join("");
+  const r=rem();$("rTime").value=r.time;
+  $("rDays").innerHTML=WD.map((w,i)=>'<button class="dayc'+(r.days.includes(i)?" on":"")+'" data-d="'+i+'">'+w+'</button>').join("");
   $("homeD").textContent=tr(/iPhone|iPad|iPod/.test(navigator.userAgent)?"homeIos":"homeAnd");
 }
-$("rDays").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;const r=rem(),d=+b.dataset.d;r.days=(r.days||[]).includes(d)?r.days.filter(x=>x!==d):r.days.concat(d);persist();b.classList.toggle("on")});
+$("rDays").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;const r=rem(),d=+b.dataset.d;r.days=r.days.includes(d)?r.days.filter(x=>x!==d):r.days.concat(d);persist();b.classList.toggle("on")});
 $("rTime").addEventListener("change",e=>{rem().time=e.target.value||"18:00";persist()});
 $("remAdd").onclick=async()=>{
-  const r=rem();if(!r.days||!r.days.length)return toast(tr("pickDay"));
+  const r=rem();if(!r.days.length)return toast(tr("pickDay"));
   const [hh,mm]=r.time.split(":").map(Number),p=n=>String(n).padStart(2,"0");
   const d=new Date();d.setSeconds(0,0);d.setHours(hh,mm);
   for(let i=0;i<8&&!(r.days.includes(d.getDay())&&d>new Date());i++){d.setDate(d.getDate()+1);d.setHours(hh,mm)}
   const ds=d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"T"+p(hh)+p(mm)+"00";
   const n=new Date(),st=n.getUTCFullYear()+p(n.getUTCMonth()+1)+p(n.getUTCDate())+"T"+p(n.getUTCHours())+p(n.getUTCMinutes())+"00Z";
-  const by=["SU","MO","TU","WE","TH","FR","SA"],txt=pickRandomReminder();
+  const by=["SU","MO","TU","WE","TH","FR","SA"],txt=tr("remAsk");
   const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//AbdCode//WorkNotebook//EN","BEGIN:VEVENT","UID:worknotebook-reminder@abdcode","DTSTAMP:"+st,"DTSTART:"+ds,"DURATION:PT15M","RRULE:FREQ=WEEKLY;BYDAY="+r.days.slice().sort().map(i=>by[i]).join(","),"SUMMARY:📒 "+txt,"BEGIN:VALARM","TRIGGER:PT0M","ACTION:DISPLAY","DESCRIPTION:"+txt,"END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
   const ok=await saveFile({name:"work-reminder.ics",blob:new Blob([ics],{type:"text/calendar"})});
   toast(ok?tr("remDone"):tr("noDl"));
@@ -748,123 +951,53 @@ $("remAdd").onclick=async()=>{
 
 render();
 
-// ===== Real Random Daily Notifications =====
-const PUSH_OK="serviceWorker" in navigator&&"PushManager" in window;
-const NOTIF_OK="Notification" in window;
+// ===== Real push reminders (needs the Worker, see API above) =====
+const PUSH_OK="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
 const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 const b64uToArr=s=>{const b=(s+"=".repeat((4-s.length%4)%4)).replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(b),c=>c.charCodeAt(0))};
 function lastLogged(){let m="";Object.values(S.books).forEach(b=>Object.keys(b.data||{}).forEach(k=>{if(k>m)m=k}));return m}
 let pushT=null;
-
-async function showAppNotification(title,body){
-  if(!NOTIF_OK||Notification.permission!=="granted")return false;
-  try{
-    if("serviceWorker" in navigator){
-      const reg=await navigator.serviceWorker.getRegistration();
-      if(reg&&typeof reg.showNotification==="function"){
-        await reg.showNotification(title,{body,tag:"work-notebook-reminder"});
-        return true;
-      }
-    }
-  }catch(_){}
-  try{new Notification(title,{body,tag:"work-notebook-reminder"});return true}catch(_){return false}
-}
-
-async function getSub(){
-  if(!PUSH_OK)return null;
-  try{const r=await navigator.serviceWorker.getRegistration();return r?await r.pushManager.getSubscription():null}catch(e){return null}
-}
+async function getSub(){try{const r=await navigator.serviceWorker.getRegistration();return r?await r.pushManager.getSubscription():null}catch(e){return null}}
 async function doSync(){
-  if(!API)return;
   const sub=await getSub();if(!sub)return;const r=rem();
   try{caches.open("wn-meta").then(c=>c.put("lang",new Response(LANG)))}catch(e){}
   await fetch(API+"/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sub:sub.toJSON(),time:r.time,days:r.days,tz:Intl.DateTimeFormat().resolvedOptions().timeZone,lang:LANG,last:lastLogged()})});
 }
 function syncPush(){
-  if(!API||!PUSH_OK||!NOTIF_OK||Notification.permission!=="granted")return;
+  if(!API||!PUSH_OK||Notification.permission!=="granted")return;
   clearTimeout(pushT);pushT=setTimeout(()=>doSync().catch(()=>{}),1500);
 }
 async function refreshPush(){
-  const r=rem();
-  const isOn=!!(NOTIF_OK&&Notification.permission==="granted"&&r.notifEnabled);
-  $("pushBtn").textContent=tr(isOn?"pushOff":"pushOn");
-  if(!isOn){$("pushStat").textContent="";return}
-  $("pushStat").textContent=API?tr("pushOk"):tr("pushNoApi");
+  const on=PUSH_OK&&Notification.permission==="granted"&&!!(await getSub());
+  $("pushSw").checked=on;$("nStat").textContent=tr(on?"notifOn":"notifOff");
 }
 async function enablePush(){
-  if(!NOTIF_OK)return toast(tr("pushFail"));
-  if(isIOS&&!standalone())return toast(tr("pushNeedHome"));
+  if(!API)return toast(tr("pushNoApi"));
+  if(!PUSH_OK||(isIOS&&!standalone()))return toast(tr("pushNeedHome"));
   try{
-    const perm=Notification.permission==="granted"?"granted":await Notification.requestPermission();
+    const perm=await Notification.requestPermission();
     if(perm!=="granted")return toast(tr("pushDenied"));
-    rem().notifEnabled=true;
-    persist();
-    if("serviceWorker" in navigator){
-      try{await navigator.serviceWorker.register("sw.js");await navigator.serviceWorker.ready}catch(_){}
-    }
-    if(API){
-      try{
-        const reg=await navigator.serviceWorker.getRegistration();
-        let sub=reg?await reg.pushManager.getSubscription():null;
-        if(!sub&&reg){
-          const key=(await (await fetch(API+"/vapid")).text()).trim();
-          sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64uToArr(key)});
-        }
-        await doSync();
-      }catch(_){}
-    }
-    refreshPush();
-    toast(tr("pushOk"));
+    await navigator.serviceWorker.register("sw.js");await navigator.serviceWorker.ready;
+    const reg=await navigator.serviceWorker.getRegistration();
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){const key=(await (await fetch(API+"/vapid")).text()).trim();sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64uToArr(key)})}
+    await doSync();refreshPush();toast(tr("notifOn"));
   }catch(e){toast(tr("pushFail"))}
 }
 async function disablePush(){
-  rem().notifEnabled=false;
-  persist();
-  try{
-    const sub=await getSub();
-    if(sub){const ep=sub.endpoint;await sub.unsubscribe();if(API)fetch(API+"/unsub",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({endpoint:ep})}).catch(()=>{})}
-  }catch(_){}
+  try{const sub=await getSub();if(sub){const ep=sub.endpoint;await sub.unsubscribe();if(API)fetch(API+"/unsub",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({endpoint:ep})}).catch(()=>{})}}catch(e){}
   refreshPush();
 }
-
-function checkLocalReminder(){
-  const r=rem();
-  if(!r.notifEnabled||!NOTIF_OK||Notification.permission!=="granted")return;
-  const nowD=new Date();
-  const dayIdx=nowD.getDay();
-  if(!(r.days||[]).includes(dayIdx))return;
-  const [hh,mm]=(r.time||"18:00").split(":").map(Number);
-  const nowMins=nowD.getHours()*60+nowD.getMinutes();
-  const targetMins=(hh||0)*60+(mm||0);
-  if(nowMins<targetMins)return;
-  const todayKey=key(nowD.getFullYear(),nowD.getMonth(),nowD.getDate());
-  if(r.lastNotif===todayKey)return;
-  const hasTodayEntry=Object.values(S.books).some(b=>b.data&&b.data[todayKey]);
-  if(hasTodayEntry)return;
-  r.lastNotif=todayKey;
-  persist();
-  showAppNotification(tr("title"),pickRandomReminder());
-}
-
-$("pushBtn").onclick=async()=>{
-  const r=rem();
-  (NOTIF_OK&&Notification.permission==="granted"&&r.notifEnabled)?disablePush():enablePush();
+$("pushSw").onchange=async e=>{if(e.target.checked)await enablePush();else await disablePush();refreshPush()};
+$("pushTest").onclick=async()=>{
+  try{
+    if(!PUSH_OK||Notification.permission!=="granted")return toast(tr("pushTestNeed"));
+    const reg=await navigator.serviceWorker.getRegistration();if(!reg)return toast(tr("pushTestNeed"));
+    await reg.showNotification("\uD83D\uDCD2 "+tr("remAsk"),{body:tr("pushTestBody"),icon:"icon-192.png",tag:"wn-test"});
+  }catch(e){toast(tr("fail"))}
 };
-$("testNotifBtn").onclick=async()=>{
-  if(!NOTIF_OK)return toast(tr("pushFail"));
-  if(isIOS&&!standalone())return toast(tr("pushNeedHome"));
-  if(Notification.permission!=="granted"){
-    const perm=await Notification.requestPermission();
-    if(perm!=="granted")return toast(tr("pushDenied"));
-  }
-  const ok=await showAppNotification(tr("title"),pickRandomReminder());
-  toast(ok?"تم إرسال الإشعار":tr("pushFail"));
-};
-
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
-setInterval(checkLocalReminder,30000);
-checkLocalReminder();
 syncPush();
 </script>
 </body>
